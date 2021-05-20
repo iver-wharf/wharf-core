@@ -31,8 +31,6 @@ type Version struct {
 
 // UnmarshalVersionYAML reads a YAML formatted file body and returns the
 // parsed Version.
-func UnmarshalVersionYAML(in []byte) (Version, error) {
-	var version Version
-	err := yaml.Unmarshal(in, &version)
-	return version, err
+func UnmarshalVersionYAML(in []byte, version *Version) error {
+	return yaml.Unmarshal(in, &version)
 }

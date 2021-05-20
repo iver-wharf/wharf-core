@@ -41,9 +41,7 @@ func getVersionHandler(c *gin.Context) {
 }
 
 func ExampleVersion_ginEndpoint() {
-	var err error
-	AppVersion, err = app.UnmarshalVersionYAML(versionFile)
-	if err != nil {
+	if err := app.UnmarshalVersionYAML(versionFile, &AppVersion); err != nil {
 		fmt.Println("Failed to read embedded version.yaml file:", err)
 		os.Exit(1)
 	}

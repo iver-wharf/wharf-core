@@ -14,8 +14,8 @@ buildDate: 2021-05-20T14:27:11+01:00
 buildRef: 123
 `)
 
-	version, err := app.UnmarshalVersionYAML(body)
-	if err != nil {
+	var version app.Version
+	if err := app.UnmarshalVersionYAML(body, &version); err != nil {
 		fmt.Println("Unexpected error:", err)
 	}
 
