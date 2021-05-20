@@ -20,10 +20,10 @@ import (
 //
 // 		cat <<EOF > version.yaml
 // 		version: ${BUILD_VERSION}
-//  	buildGitCommit: ${BUILD_GIT_COMMIT}
-//  	buildDate: $(date '+%FT%T%:z')
-//  	buildRef: ${BUILD_REF}
-//  	EOF
+// 		buildGitCommit: ${BUILD_GIT_COMMIT}
+// 		buildDate: $(date '+%FT%T%:z')
+// 		buildRef: ${BUILD_REF}
+// 		EOF
 
 // go:embed version.yaml
 var versionFile []byte
