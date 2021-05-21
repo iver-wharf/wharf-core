@@ -1,5 +1,7 @@
 # Wharf core library
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/iver-wharf/wharf-core.svg)](https://pkg.go.dev/github.com/iver-wharf/wharf-core)
+
 Utility Go code used by numerous other Wharf components.
 
 Mantra of this repository is to include code that will be used in more than 1
