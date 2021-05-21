@@ -22,21 +22,20 @@ type RootConfig struct {
 }
 
 func DefaultConfig() RootConfig {
-	return RootConfig{
-		Daz: "default daz",
-		Moo: InnerConfig{
-			Foo: "default foo",
-		},
-	}
+	return RootConfig{}
 }
+
+var sampleConfYaml = `
+daz: conf daz
+moo:
+  foo: conf foo
+`
 
 func TestEnvConfig(t *testing.T) {
 	var cfg RootConfig
 
-	os.Setenv("MOO_FOO", "moo bla")
-	os.Setenv("MOO", "moo")
-	os.Setenv("FOO", "foo")
-	os.Setenv("DAZ", "daz")
+	os.Setenv("MOO_FOO", "moo foo")
+	//os.Setenv("DAZ", "env daz")
 
 	// May be ugly, but it works
 	// https://github.com/spf13/viper/issues/188#issuecomment-413368673
@@ -44,6 +43,8 @@ func TestEnvConfig(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	t.Logf("\n%s", string(b))
 
 	defaultCfg := bytes.NewReader(b)
 	viper.SetConfigType("yaml")
@@ -58,14 +59,17 @@ func TestEnvConfig(t *testing.T) {
 		}
 	}
 
+	reader := strings.NewReader(sampleConfYaml)
+	if err := viper.MergeConfig(reader); err != nil {
+		t.Fatalf("%T: %v", err, err)
+	}
+
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	if err := viper.Unmarshal(&cfg); err != nil {
 		t.Fatal("unmarshal config:", err)
 	}
-
-	viper.Debug()
 
 	if cfg.Moo.Foo != "moo foo" {
 		t.Errorf("wanted MOO_FOO to be 'moo foo', got: %+v", cfg)
