@@ -24,7 +24,7 @@ func DefaultConfig() RootConfig {
 }
 
 var sampleConfYaml = `
-#daz: conf daz
+daz: conf daz
 moo:
   foo: conf foo
 `
