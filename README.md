@@ -37,6 +37,8 @@ What you **will not** find in this repository:
 
 - YAML library [gopkg.in/yaml.v2 (github.com/go-yaml/yaml)](https://github.com/go-yaml/yaml)
 
+- Configuration library [spf13/viper](https://github.com/spf13/viper)
+
 - There are others, but those are solely used in example tests, such as the
   following (non-extensive list):
 
