@@ -2,8 +2,10 @@ package config
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -118,7 +120,7 @@ func (c *config) Unmarshal(config interface{}) error {
 	initDefaults(v, c.defaultConfig)
 	for _, s := range c.sources {
 		if err := s.apply(v); err != nil {
-			return fmt.Errorf("applying config source: %s: %w", s.name(), err)
+			return fmt.Errorf("applying config source: %s: %T: %w", s.name(), err, err)
 		}
 	}
 	return v.Unmarshal(config)
@@ -157,7 +159,15 @@ func (s yamlFileSource) apply(v *viper.Viper) error {
 	}
 	v.SetConfigType(configTypeYAML)
 	v.SetConfigFile(s.path)
-	return v.MergeInConfig()
+	err := v.MergeInConfig()
+	// ignore not-found errors
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil
+	}
+	if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+		return nil
+	}
+	return err
 }
 
 type yamlSource struct {

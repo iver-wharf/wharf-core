@@ -1,0 +1,7 @@
+# Used in config_example_test.go#ExampleConfig
+
+logLevel: Info
+# YAML key names are case-insensitive
+pAssWOrD: Sommar2020
+db:
+  port: 8080
