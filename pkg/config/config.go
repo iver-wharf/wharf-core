@@ -12,13 +12,79 @@ import (
 
 const configTypeYAML = "yaml"
 
+// Config type has methods for registering configuration sources, and then using
+// those sources you can unmarshal into a struct to read the configuration.
+//
+// Later added config sources will merge on top of the previous on a
+// per config field basis. Later added sources will override earlier added
+// sources.
 type Config interface {
+	// AddConfigYAMLFile appends the path of a YAML file to the list of sources
+	// for this configuration.
+	//
+	// Later added config sources will merge on top of the previous on a
+	// per config field basis. Later added sources will override earlier added
+	// sources.
 	AddConfigYAMLFile(path string)
+
+	// AddConfigYAML appends a byte reader for UTF-8 and YAML formatted content.
+	// Useful for reading from embedded files, database stored configs, and from
+	// HTTP response bodies.
+	//
+	// Later added config sources will merge on top of the previous on a
+	// per config field basis. Later added sources will override earlier added
+	// sources.
 	AddConfigYAML(reader io.Reader)
+
+	// AddEnvironmentVariables appends an environment variable source.
+	//
+	// Later added config sources will merge on top of the previous on a
+	// per config field basis. Later added sources will override earlier added
+	// sources.
+	//
+	// However, multiple environment variable sources cannot be added, due to
+	// technical limitations with the implementation. Even if they use different
+	// prefixes.
+	//
+	// Environment variables must be in all uppercase letters, and nested
+	// structs use a single underscore "_" as delimiter. Example:
+	//
+	//  c := config.New(myConfigDefaults)
+	//  c.AddEnvironmentVariables("FOO")
+	//
+	//  type MyConfig struct {
+	//  	Bar        string // set via "FOO_BAR"
+	//  	LoremIpsum string // set via "FOO_LOREMIPSUM"
+	//  	Hello      struct {
+	//  		World string // set via "FOO_HELLO_WORLD"
+	//  	}
+	//  }
+	//
+	// The prefix shall be without a trailing underscore "_" as this package
+	// adds that in by itself. To not use a prefix, pass in an empty string as
+	// prefix instead.
 	AddEnvironmentVariables(prefix string)
+
+	// Unmarshal applies the configuration, based on the numerous added sources,
+	// on to an existing struct.
+	//
+	// For any field of type pointer and is set to nil, this function will
+	// create a new instance and assign that before populating that branch.
+	//
+	// If none of the Config.Add...() functions has been called before this
+	// function, then this function will effectively only apply the default
+	// configuration onto this new object.
+	//
+	// The error that is returned is caused by any of the added config sources,
+	// such as from invalid YAML syntax in an added YAML file.
 	Unmarshal(config interface{}) error
 }
 
+// New creates a new Config based on a default configuration.
+//
+// Due to technical limitations, it's vital that this default configuration is
+// of the same type that the config that you wish to unmarshal later, or at
+// least that it contains fields with the same names.
 func New(defaultConfig interface{}) Config {
 	return &config{
 		defaultConfig: defaultConfig,
