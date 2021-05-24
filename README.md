@@ -1,5 +1,6 @@
 # Wharf core library
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7eddf4e7be814c2f9fb2b6efbec69fc9)](https://www.codacy.com/gh/iver-wharf/wharf-core/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=iver-wharf/wharf-core&amp;utm_campaign=Badge_Grade)
 [![Go Reference](https://pkg.go.dev/badge/github.com/iver-wharf/wharf-core.svg)](https://pkg.go.dev/github.com/iver-wharf/wharf-core)
 
 Utility Go code used by numerous other Wharf components.
