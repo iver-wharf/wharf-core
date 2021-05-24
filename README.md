@@ -80,13 +80,38 @@ Requires Go 1.16 or later to be installed: <https://golang.org/>
 go test -v ./...
 ```
 
+## Linting Golang
+
+- Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
+- Requires Revive to be installed: <https://revive.run/>
+
+```sh
+go get -u github.com/mgechev/revive
+```
+
+```sh
+npm run lint-go
+```
+
 ## Linting markdown
 
-Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
+- Requires Node.js (npm) to be installed: <https://nodejs.org/en/download/>
 
 ```sh
 npm install
 
+npm run lint-md
+
+# Some errors can be fixed automatically. Keep in mind that this updates the
+# files in place.
+npm run lint-md-fix
+```
+
+## Linting
+
+You can lint all of the above at the same time by running:
+
+```sh
 npm run lint
 
 # Some errors can be fixed automatically. Keep in mind that this updates the
