@@ -42,17 +42,17 @@ var defaultConfig = Config{
 var embeddedConfig []byte
 
 func ExampleConfig() {
-	cb := config.New(defaultConfig)
-	cb.AddConfigYAML(bytes.NewReader(embeddedConfig))
-	cb.AddConfigYAMLFile("/etc/my-app/config.yml")
-	cb.AddConfigYAMLFile("$HOME/.config/my-app/config.yml")
-	cb.AddConfigYAMLFile("my-app-config.yml") // from working directory
-	cb.AddEnvironmentVariables("MYAPP")
+	cfgBuilder := config.NewBuilder(defaultConfig)
+	cfgBuilder.AddConfigYAML(bytes.NewReader(embeddedConfig))
+	cfgBuilder.AddConfigYAMLFile("/etc/my-app/config.yml")
+	cfgBuilder.AddConfigYAMLFile("$HOME/.config/my-app/config.yml")
+	cfgBuilder.AddConfigYAMLFile("my-app-config.yml") // from working directory
+	cfgBuilder.AddEnvironmentVariables("MYAPP")
 
 	os.Setenv("MYAPP_PASSWORD", "Sommar2020")
 
 	var cfg Config
-	if err := cb.Unmarshal(&cfg); err != nil {
+	if err := cfgBuilder.Unmarshal(&cfg); err != nil {
 		fmt.Println("Failed to read config:", err)
 		return
 	}

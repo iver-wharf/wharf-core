@@ -52,7 +52,7 @@ var defaultConfig = TestConfig{
 	},
 }
 
-func assertUnmarshaledConfig(t *testing.T, c ConfigBuilder) {
+func assertUnmarshaledConfig(t *testing.T, c Builder) {
 	var cfg TestConfig
 	require.Nil(t, c.Unmarshal(&cfg), "failed to read config")
 	assert.Equal(t, updatedLogLevel, cfg.LogLevel)
@@ -63,7 +63,7 @@ func assertUnmarshaledConfig(t *testing.T, c ConfigBuilder) {
 }
 
 func TestConfig_AddEnvironmentVariables(t *testing.T) {
-	cb := New(defaultConfig)
+	cb := NewBuilder(defaultConfig)
 	cb.AddEnvironmentVariables("")
 
 	os.Clearenv()
@@ -84,13 +84,13 @@ pAssWOrD: %s
 db:
   port: %d
 `, updatedLogLevel, updatedPassword, updatedPort)
-	cb := New(defaultConfig)
+	cb := NewBuilder(defaultConfig)
 	cb.AddConfigYAML(strings.NewReader(yamlContent))
 	assertUnmarshaledConfig(t, cb)
 }
 
 func TestConfig_AddConfigYAMLFile(t *testing.T) {
-	cb := New(defaultConfig)
+	cb := NewBuilder(defaultConfig)
 	cb.AddConfigYAMLFile("testdata/add-config-yaml-file.yml")
 	assertUnmarshaledConfig(t, cb)
 }

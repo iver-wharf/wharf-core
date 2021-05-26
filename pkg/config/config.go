@@ -14,14 +14,14 @@ import (
 
 const configTypeYAML = "yaml"
 
-// ConfigBuilder type has methods for registering configuration sources, and
+// Builder type has methods for registering configuration sources, and
 // then using those sources you can unmarshal into a struct to read the
 // configuration.
 //
 // Later added config sources will merge on top of the previous on a
 // per config field basis. Later added sources will override earlier added
 // sources.
-type ConfigBuilder interface {
+type Builder interface {
 	// AddConfigYAMLFile appends the path of a YAML file to the list of sources
 	// for this configuration.
 	//
@@ -52,7 +52,7 @@ type ConfigBuilder interface {
 	// Environment variables must be in all uppercase letters, and nested
 	// structs use a single underscore "_" as delimiter. Example:
 	//
-	//  c := config.New(myConfigDefaults)
+	//  c := config.NewBuilder(myConfigDefaults)
 	//  c.AddEnvironmentVariables("FOO")
 	//
 	//  type MyConfig struct {
@@ -74,7 +74,7 @@ type ConfigBuilder interface {
 	// For any field of type pointer and is set to nil, this function will
 	// create a new instance and assign that before populating that branch.
 	//
-	// If none of the ConfigBuilder.Add...() functions has been called before
+	// If none of the Builder.Add...() functions has been called before
 	// this function, then this function will effectively only apply the default
 	// configuration onto this new object.
 	//
@@ -83,18 +83,18 @@ type ConfigBuilder interface {
 	Unmarshal(config interface{}) error
 }
 
-// New creates a new ConfigBuilder based on a default configuration.
+// NewBuilder creates a new Builder based on a default configuration.
 //
 // Due to technical limitations, it's vital that this default configuration is
 // of the same type that the config that you wish to unmarshal later, or at
 // least that it contains fields with the same names.
-func New(defaultConfig interface{}) ConfigBuilder {
-	return &configBuilder{
+func NewBuilder(defaultConfig interface{}) Builder {
+	return &builder{
 		defaultConfig: defaultConfig,
 	}
 }
 
-type configBuilder struct {
+type builder struct {
 	defaultConfig interface{}
 	sources       []configSource
 }
@@ -104,22 +104,22 @@ type configSource interface {
 	apply(v *viper.Viper) error
 }
 
-func (cb *configBuilder) AddConfigYAMLFile(path string) {
-	cb.sources = append(cb.sources, yamlFileSource{path})
+func (b *builder) AddConfigYAMLFile(path string) {
+	b.sources = append(b.sources, yamlFileSource{path})
 }
 
-func (cb *configBuilder) AddConfigYAML(reader io.Reader) {
-	cb.sources = append(cb.sources, yamlSource{reader})
+func (b *builder) AddConfigYAML(reader io.Reader) {
+	b.sources = append(b.sources, yamlSource{reader})
 }
 
-func (cb *configBuilder) AddEnvironmentVariables(prefix string) {
-	cb.sources = append(cb.sources, envVarsSource{prefix})
+func (b *builder) AddEnvironmentVariables(prefix string) {
+	b.sources = append(b.sources, envVarsSource{prefix})
 }
 
-func (cb *configBuilder) Unmarshal(config interface{}) error {
+func (b *builder) Unmarshal(config interface{}) error {
 	v := viper.New()
-	initDefaults(v, cb.defaultConfig)
-	for _, s := range cb.sources {
+	initDefaults(v, b.defaultConfig)
+	for _, s := range b.sources {
 		if err := s.apply(v); err != nil {
 			return fmt.Errorf("applying config source: %s: %T: %w", s.name(), err, err)
 		}
