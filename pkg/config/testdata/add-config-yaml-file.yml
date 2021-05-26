@@ -1,7 +1,7 @@
-# Used in config_example_test.go#ExampleConfig_AddConfigYAMLFile
+# Used in config_test.go#TestConfig_AddConfigYAMLFile
 
-logLevel: Info
+logLevel: updated log level
 # YAML key names are case-insensitive
-pAssWOrD: Sommar2020
+pAssWOrD: updated password
 db:
   port: 8080
