@@ -1,0 +1,6 @@
+# Used in config_example_test.go#ExampleConfig
+
+# YAML key names are case-insensitive
+LogLEVEL: Info
+db:
+  port: 8080

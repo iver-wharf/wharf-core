@@ -1,0 +1,7 @@
+# Used in config_test.go#TestConfig_AddConfigYAMLFile
+
+logLevel: updated log level
+# YAML key names are case-insensitive
+pAssWOrD: updated password
+db:
+  port: 8080
