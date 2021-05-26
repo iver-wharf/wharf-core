@@ -17,3 +17,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Added `pkg/app` with newly added `app.Version` struct together with an example
   of how to use with [gin-gonic/gin](https://github.com/gin-gonic/gin).
 	Use this for versioning your built APIs and command-line programs. (#2)
+
+- Added `pkg/config` with newly added `config.Config` interface and
+  implementation to let you load configs from environment variables or YAML
+  files. This is done via [spf13/viper](https://github.com/spf13/viper). (#4)
