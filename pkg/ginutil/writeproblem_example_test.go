@@ -1,4 +1,4 @@
-package ginutils_test
+package ginutil_test
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 
 	"github.com/gin-gonic/gin"
-	"github.com/iver-wharf/wharf-core/pkg/ginutils"
+	"github.com/iver-wharf/wharf-core/pkg/ginutil"
 	"github.com/iver-wharf/wharf-core/pkg/problem"
 )
 
@@ -39,7 +39,7 @@ func ExampleWriteProblem() {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 
-	ginutils.WriteProblem(c, prob)
+	ginutil.WriteProblem(c, prob)
 
 	resp := w.Result()
 
