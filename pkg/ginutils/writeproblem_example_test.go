@@ -63,31 +63,3 @@ func ExampleWriteProblem() {
 	//   ]
 	// }
 }
-
-func ExampleWriteProblem_emptyResponse() {
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest("GET", "/example/request/uri?foo=bar", nil)
-
-	ginutils.WriteProblem(c, problem.Response{})
-
-	resp := w.Result()
-
-	fmt.Println("HTTP/1.1", resp.Status)
-	fmt.Println("Content-Type:", resp.Header.Get("Content-Type"))
-	fmt.Println()
-	fmt.Println(indentedBodyFromResponse(resp))
-
-	// Output:
-	// HTTP/1.1 500 Internal Server Error
-	// Content-Type: application/problem+json
-	//
-	// {
-	//   "type": "about:blank",
-	//   "title": "Unknown error.",
-	//   "status": 500,
-	//   "detail": "",
-	//   "instance": "/example/request/uri?foo=bar",
-	//   "errors": null
-	// }
-}
