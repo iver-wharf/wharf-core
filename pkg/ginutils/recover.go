@@ -8,7 +8,9 @@ import (
 	"github.com/iver-wharf/wharf-core/pkg/problem"
 )
 
-func RecoverHandle(c *gin.Context, err interface{}) {
+// RecoverProblemHandle writes a HTTP "Internal Server Error" problem response.
+// Meant to be used with the gin-gonic panic recover middleware.
+func RecoverProblemHandle(c *gin.Context, err interface{}) {
 	WriteProblem(c, problem.Response{
 		Type:   "/prob/api/internal-server-error",
 		Title:  "Internal server error.",
