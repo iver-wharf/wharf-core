@@ -21,3 +21,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Added `pkg/config` with newly added `config.Config` interface and
   implementation to let you load configs from environment variables or YAML
   files. This is done via [spf13/viper](https://github.com/spf13/viper). (#4)
+
+- Added `pkg/problem` and `pkg/ginutil` to easily use the IETF RFC-7808
+  compatible `problem.Response`, originally taken from
+  [wharf-api](https://github.com/iver-wharf/wharf-api). (#9)
