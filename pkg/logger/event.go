@@ -140,7 +140,6 @@ func NewEvent(level Level, done DoneFunc) Event {
 		}
 	}
 	ev := event{level, ctxs, done}
-	// +1 to omit this function from the caller name
 	if caller, line := traceutil.CallerFileWithLineNum(); caller != "" {
 		return ev.WithCaller(caller, line)
 	}
