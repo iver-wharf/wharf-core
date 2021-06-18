@@ -5,15 +5,6 @@ import (
 	"strings"
 )
 
-// Requirements:
-// - [x] LogLevel
-// - [x] Multiple writers/sinks (ex: for Kafka, for console)
-// - [x] Scope per-module configs (ex: warn for Gin, info for API audits)
-// - [x] Easy integration with Gin
-// - [x] Easy integration with GORM
-// - [ ] Easy integration with io.Writer's, ex gin.DefaultWriter & gin.DefaultErrorWriter
-// - [x] Fields
-
 // Sink is an interface that creates logging contexts. Each sink could be for
 // different log collectors such as Kibana or Logstash, or simply a console
 // logging sink that outputs all the logs to STDOUT.
