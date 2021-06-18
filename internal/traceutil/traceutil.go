@@ -8,11 +8,6 @@ import (
 
 var wharfCoreDir string
 
-var omittedPackages = []string{
-	"github.com/gin-gonic/gin",
-	"gorm.io/gorm",
-}
-
 func init() {
 	// file: /some/path/to/repo/wharf-core/internal/traceutil/traceutil.go
 	_, file, _, ok := runtime.Caller(0)
