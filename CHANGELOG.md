@@ -36,6 +36,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   libraries. Heavily inspired by [rs/zerolog](https://github.com/rs/zerolog).
   (#10, #13, #15, #20)
 
+- Added `pkg/logger` integration to Gin-Gonic and GORM inside `pkg/ginutil` and
+  `pkg/gormutil`. (#11)
+
 - Added new error response functions. (#17)
 
 - Added `pkg/env` to bind environment variable of a range of different types to
