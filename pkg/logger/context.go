@@ -6,7 +6,7 @@ import "time"
 // The data can be stored in any way that seems suitable for efficiently
 // composing a logging message for that sink.
 //
-// Most methods return the context itself. It is up the the implementation to
+// Most methods return the context itself. It is up to the implementation to
 // take advantage of this or use pointers to the same object throughout.
 //
 // It is up to the user of this type to honor the specification of feeding the

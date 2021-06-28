@@ -39,7 +39,7 @@ func CallerFileWithLineNum() (string, int) {
 }
 
 func isValidCallerFile(path string) bool {
-	return strings.HasSuffix(path, "_test.go") || !strings.HasPrefix(path, wharfCoreDir) || strings.HasSuffix(path, "/main.go")
+	return strings.HasSuffix(path, "_test.go") || !strings.HasPrefix(path, wharfCoreDir)
 }
 
 func fileAndLastDir(path string) string {

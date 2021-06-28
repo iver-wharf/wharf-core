@@ -146,7 +146,7 @@ type Config struct {
 	// 	[INFO | example.go:20] Sample message.
 	DisableDate bool
 
-	// DisableCaller removee the caller file name and line fields from the log
+	// DisableCaller removes the caller file name and line fields from the log
 	// when set to true.
 	//
 	// When set to false:
@@ -155,7 +155,7 @@ type Config struct {
 	// 	[INFO | 2006-01-02T15:04:05Z] Sample message.
 	DisableCaller bool
 
-	// DisableCallerLine removee the just the caller line field from the log
+	// DisableCallerLine removes just the caller line field from the log
 	// when set to true, but leaves the caller file name as-is.
 	//
 	// When set to false:
