@@ -20,32 +20,23 @@ func ExampleNew() {
 	// {"level":"debug","caller":"consolejson/json_example_test.go","message":"Sample message."}
 }
 
-func ExampleTimeFormat_unix() {
+func ExampleTimeFormat() {
 	defer logger.ClearOutputs()
 	logger.AddOutput(logger.LevelDebug, consolejson.New(consolejson.Config{
-		DisableDate:       true,
-		DisableCallerLine: true,
-		TimeFormat:        consolejson.TimeUnix,
+		DisableDate:   true,
+		DisableCaller: true,
+		TimeFormat:    consolejson.TimeUnix,
+	}))
+	logger.AddOutput(logger.LevelDebug, consolejson.New(consolejson.Config{
+		DisableDate:   true,
+		DisableCaller: true,
+		TimeFormat:    time.Kitchen, // any format string is supported
 	}))
 
 	t := time.Date(2006, 1, 2, 3, 4, 5, 0, time.UTC)
-	logger.New().Debug().WithTime("unix", t).Message("Sample message.")
+	logger.New().Debug().WithTime("sample", t).Message("Sample message.")
 
 	// Output:
-	// {"level":"debug","caller":"consolejson/json_example_test.go","message":"Sample message.","unix":1136171045}
-}
-
-func ExampleTimeFormat_customFormat() {
-	defer logger.ClearOutputs()
-	logger.AddOutput(logger.LevelDebug, consolejson.New(consolejson.Config{
-		DisableDate:       true,
-		DisableCallerLine: true,
-		TimeFormat:        time.Kitchen,
-	}))
-
-	t := time.Date(2006, 1, 2, 3, 4, 5, 0, time.UTC)
-	logger.New().Debug().WithTime("kitchen", t).Message("Sample message.")
-
-	// Output:
-	// {"level":"debug","caller":"consolejson/json_example_test.go","message":"Sample message.","kitchen":"3:04AM"}
+	// {"level":"debug","message":"Sample message.","sample":1136171045}
+	// {"level":"debug","message":"Sample message.","sample":"3:04AM"}
 }
