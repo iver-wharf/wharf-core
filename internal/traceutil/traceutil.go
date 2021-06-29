@@ -27,8 +27,13 @@ func init() {
 // this function and ignoring all paths from inside this repository
 // (wharf-core). unless it's also a test file ("*_test.go")
 func CallerFileWithLineNum() (string, int) {
-	// start on 2 to disregard this func and caller of this func
-	for i := 2; i < 15; i++ {
+	const (
+		// start on 2 to disregard this func and caller of this func
+		startDepth = 2
+		// the max is mostly arbitrary, but we don't want an infinite loop
+		maxDepth = 15
+	)
+	for i := startDepth; i <= maxDepth; i++ {
 		_, path, line, ok := runtime.Caller(i)
 
 		if ok && isValidCallerFile(path) {
