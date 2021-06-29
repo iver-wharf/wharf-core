@@ -12,7 +12,9 @@ func init() {
 	// file: /some/path/to/repo/wharf-core/internal/traceutil/traceutil.go
 	_, file, _, ok := runtime.Caller(0)
 	if ok {
-		// wharfCoreDir: /some/path/to/repo/wharf-core
+		// filepath.Dir(file)^1: /some/path/to/repo/wharf-core/internal/traceutil
+		// filepath.Dir(file)^2: /some/path/to/repo/wharf-core/internal
+		// filepath.Dir(file)^3: /some/path/to/repo/wharf-core
 		wharfCoreDir = filepath.Dir(filepath.Dir(filepath.Dir(file)))
 	} else {
 		// no file will start with null char
