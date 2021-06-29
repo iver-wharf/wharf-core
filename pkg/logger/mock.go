@@ -95,15 +95,15 @@ func (c mockCtx) WriteOut(level Level, message string) {
 	c.logger.Logs = append(c.logger.Logs, c.MockLog)
 }
 
-func (c mockCtx) AppendCaller(file string, line int) Context {
+func (c mockCtx) SetCaller(file string, line int) Context {
 	c.Fields["caller"] = file
 	c.Fields["line"] = line
 	c.FieldNames = append(c.FieldNames, "caller", "line")
 	return c
 }
 
-func (c mockCtx) AppendScope(v string) Context                     { return c.addField("scope", v) }
-func (c mockCtx) AppendError(v error) Context                      { return c.addField("error", v) }
+func (c mockCtx) SetScope(v string) Context                        { return c.addField("scope", v) }
+func (c mockCtx) SetError(v error) Context                         { return c.addField("error", v) }
 func (c mockCtx) AppendString(k string, v string) Context          { return c.addField(k, v) }
 func (c mockCtx) AppendRune(k string, v rune) Context              { return c.addField(k, v) }
 func (c mockCtx) AppendBool(k string, v bool) Context              { return c.addField(k, v) }

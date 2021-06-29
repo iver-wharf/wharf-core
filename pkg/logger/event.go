@@ -195,11 +195,11 @@ func (ev event) returnPooledSlice() {
 }
 
 func (ev event) WithCaller(file string, line int) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendCaller(file, line) })
+	return ev.with(func(ctx Context) Context { return ctx.SetCaller(file, line) })
 }
 
 func (ev event) WithScope(value string) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendScope(value) })
+	return ev.with(func(ctx Context) Context { return ctx.SetScope(value) })
 }
 
 func (ev event) WithString(key string, value string) Event {
@@ -247,7 +247,7 @@ func (ev event) WithFloat64(key string, value float64) Event {
 }
 
 func (ev event) WithError(value error) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendError(value) })
+	return ev.with(func(ctx Context) Context { return ctx.SetError(value) })
 }
 
 func (ev event) WithTime(key string, value time.Time) Event {

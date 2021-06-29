@@ -319,18 +319,18 @@ func escapeString(value string) string {
 	return value
 }
 
-func (c context) AppendScope(value string) logger.Context {
+func (c context) SetScope(value string) logger.Context {
 	c.scope = value
 	return c
 }
 
-func (c context) AppendCaller(file string, line int) logger.Context {
+func (c context) SetCaller(file string, line int) logger.Context {
 	c.callerFile = file
 	c.callerLine = line
 	return c
 }
 
-func (c context) AppendError(value error) logger.Context {
+func (c context) SetError(value error) logger.Context {
 	c.err = value
 	return c
 }

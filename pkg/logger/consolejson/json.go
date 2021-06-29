@@ -236,17 +236,17 @@ func (c context) WriteOut(level logger.Level, message string) {
 	buf.WriteTo(os.Stdout)
 }
 
-func (c context) AppendScope(value string) logger.Context {
+func (c context) SetScope(value string) logger.Context {
 	c.scope = value
 	return c
 }
 
-func (c context) AppendCaller(file string, line int) logger.Context {
+func (c context) SetCaller(file string, line int) logger.Context {
 	c.caller, c.callerLine = file, line
 	return c
 }
 
-func (c context) AppendError(value error) logger.Context {
+func (c context) SetError(value error) logger.Context {
 	c = c.appendRawFieldName(c.ErrorField)
 	c.fields = appendEscapedString(c.fields, value.Error())
 	return c

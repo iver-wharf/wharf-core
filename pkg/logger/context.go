@@ -28,7 +28,7 @@ type Context interface {
 	// Append... methods
 	WriteOut(level Level, message string)
 
-	// AppendScope adds a scope value to this context.
+	// SetScope adds a scope value to this context.
 	//
 	// Calling this method multiple times shall override the previous value.
 	// An empty string signifies to unset this field.
@@ -36,8 +36,8 @@ type Context interface {
 	// In contrast to AppendString, the logging sink is allowed to render this
 	// differently. E.g. some may render it as yet another field named "scope",
 	// others may render it as a specific HTTP header in a request.
-	AppendScope(value string) Context
-	// AppendCaller adds a caller and its line value to this context.
+	SetScope(value string) Context
+	// SetCaller adds a caller and its line value to this context.
 	//
 	// Calling this method multiple times shall override the previous value.
 	// An empty string on the file name signifies to unset this field.
@@ -45,8 +45,8 @@ type Context interface {
 	// In contrast to AppendString, the logging sink is allowed to render this
 	// differently. E.g. some may render it as yet another fields named "caller"
 	// and "line", others may render it as a specific HTTP header in a request.
-	AppendCaller(file string, line int) Context
-	// AppendError adds an error value to this context.
+	SetCaller(file string, line int) Context
+	// SetError adds an error value to this context.
 	//
 	// Calling this method multiple times shall override the previous value.
 	// An nil signifies to unset this field.
@@ -54,7 +54,7 @@ type Context interface {
 	// In contrast to AppendString, the logging sink is allowed to render this
 	// differently. E.g. some may render it as yet another field named "error",
 	// others may render it as a specific HTTP header in a request.
-	AppendError(value error) Context
+	SetError(value error) Context
 	// AppendString adds a string value for a specific key to this context.
 	//
 	// Calling this method multiple times with the same key may lead to
