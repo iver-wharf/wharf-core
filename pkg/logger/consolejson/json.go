@@ -1,9 +1,7 @@
 package consolejson
 
 import (
-	"bytes"
 	"encoding/json"
-	"io"
 	"math"
 	"os"
 	"strconv"
@@ -186,54 +184,50 @@ type context struct {
 	caller     string
 	callerLine int
 	scope      string
+	error      error
 }
 
 func (c context) WriteOut(level logger.Level, message string) {
-	var buf bytes.Buffer
-	buf.WriteString(`{"`)
-	buf.WriteString(c.LevelField)
-	buf.WriteString(`":"`)
-	buf.WriteString(levelString(level))
-	buf.WriteRune('"')
+	var buf []byte
+	buf = append(buf, `{"`...)
+	buf = append(buf, c.LevelField...)
+	buf = append(buf, `":"`...)
+	buf = append(buf, levelString(level)...)
+	buf = append(buf, '"')
 
 	if !c.DisableDate {
-		buf.WriteString(`,"`)
-		buf.WriteString(c.DateField)
-		buf.WriteString(`":`)
-		writeEscapedString(&buf, time.Now().Format(time.RFC3339))
+		buf = appendFieldNameRaw(buf, c.DateField)
+		buf = appendTime(buf, time.Now(), c.TimeFormat)
 	}
 
 	if !c.DisableCaller {
-		buf.WriteString(`,"`)
-		buf.WriteString(c.CallerFileField)
-		buf.WriteString(`":`)
-		writeEscapedString(&buf, c.caller)
+		buf = appendFieldNameRaw(buf, c.CallerFileField)
+		buf = appendEscapedString(buf, c.caller)
 		if !c.DisableCallerLine {
-			buf.WriteString(`,"`)
-			buf.WriteString(c.CallerLineField)
-			buf.WriteString(`":`)
-			buf.WriteString(strconv.FormatInt(int64(c.callerLine), 10))
+			buf = appendFieldNameRaw(buf, c.CallerLineField)
+			buf = strconv.AppendInt(buf, int64(c.callerLine), 10)
 		}
 	}
 
 	if c.scope != "" {
-		buf.WriteString(`,"`)
-		buf.WriteString(c.ScopeField)
-		buf.WriteString(`":`)
-		writeEscapedString(&buf, c.scope)
+		buf = appendFieldNameRaw(buf, c.ScopeField)
+		buf = appendEscapedString(buf, c.scope)
 	}
 
 	if message != "" {
-		buf.WriteString(`,"`)
-		buf.WriteString(c.MessageField)
-		buf.WriteString(`":`)
-		writeEscapedString(&buf, message)
+		buf = appendFieldNameRaw(buf, c.MessageField)
+		buf = appendEscapedString(buf, message)
 	}
 
-	buf.Write(c.fields)
-	buf.WriteString("}\n")
+	if c.error != nil {
+		buf = appendFieldNameRaw(buf, c.ErrorField)
+		buf = appendEscapedString(buf, c.error.Error())
+	}
 
-	buf.WriteTo(os.Stdout)
+	buf = append(buf, c.fields...)
+	buf = append(buf, "}\n"...)
+
+	os.Stdout.Write(buf)
 }
 
 func (c context) SetScope(value string) logger.Context {
@@ -247,13 +241,12 @@ func (c context) SetCaller(file string, line int) logger.Context {
 }
 
 func (c context) SetError(value error) logger.Context {
-	c = c.appendRawFieldName(c.ErrorField)
-	c.fields = appendEscapedString(c.fields, value.Error())
+	c.error = value
 	return c
 }
 
 func (c context) AppendString(key string, value string) logger.Context {
-	c = c.appendFieldName(key)
+	c.fields = appendFieldName(c.fields, key)
 	c.fields = appendEscapedString(c.fields, value)
 	return c
 }
@@ -263,44 +256,51 @@ func (c context) AppendRune(key string, value rune) logger.Context {
 }
 
 func (c context) AppendBool(key string, value bool) logger.Context {
-	c = c.appendFieldName(key)
+	c.fields = appendFieldName(c.fields, key)
 	c.fields = strconv.AppendBool(c.fields, value)
 	return c
 }
 
-func (c context) AppendInt(k string, v int) logger.Context     { return c.appendInt64(k, int64(v)) }
-func (c context) AppendInt32(k string, v int32) logger.Context { return c.appendInt64(k, int64(v)) }
-func (c context) AppendInt64(k string, v int64) logger.Context { return c.appendInt64(k, v) }
+func (c context) AppendInt(k string, v int) logger.Context {
+	c.fields = appendInt64(c.fields, k, int64(v))
+	return c
+}
+func (c context) AppendInt32(k string, v int32) logger.Context {
+	c.fields = appendInt64(c.fields, k, int64(v))
+	return c
+}
+func (c context) AppendInt64(k string, v int64) logger.Context {
+	c.fields = appendInt64(c.fields, k, v)
+	return c
+}
 
-func (c context) AppendUint(k string, v uint) logger.Context     { return c.appendUint64(k, uint64(v)) }
-func (c context) AppendUint32(k string, v uint32) logger.Context { return c.appendUint64(k, uint64(v)) }
-func (c context) AppendUint64(k string, v uint64) logger.Context { return c.appendUint64(k, v) }
+func (c context) AppendUint(k string, v uint) logger.Context {
+	c.fields = appendUint64(c.fields, k, uint64(v))
+	return c
+}
+func (c context) AppendUint32(k string, v uint32) logger.Context {
+	c.fields = appendUint64(c.fields, k, uint64(v))
+	return c
+}
+func (c context) AppendUint64(k string, v uint64) logger.Context {
+	c.fields = appendUint64(c.fields, k, v)
+	return c
+}
 
 func (c context) AppendFloat32(key string, value float32) logger.Context {
-	return c.appendFloat(key, float64(value), 32)
+	c.fields = appendFloat(c.fields, key, float64(value), 32)
+	return c
 }
 
 func (c context) AppendFloat64(key string, value float64) logger.Context {
-	return c.appendFloat(key, value, 64)
+	c.fields = appendFloat(c.fields, key, value, 64)
+	return c
 }
 
 func (c context) AppendTime(key string, value time.Time) logger.Context {
-	switch c.TimeFormat {
-	case TimeUnix:
-		return c.appendInt64(key, value.Unix())
-	case TimeUnixMs:
-		const nanoToMilliDivisor = 1000000
-		return c.appendInt64(key, value.UnixNano()/nanoToMilliDivisor)
-	case TimeUnixMicro:
-		const nanoToMicroDivisor = 1000
-		return c.appendInt64(key, value.UnixNano()/nanoToMicroDivisor)
-	case TimeUnixNano:
-		return c.appendInt64(key, value.UnixNano())
-	default:
-		c = c.appendFieldName(key)
-		c.fields = appendEscapedString(c.fields, value.Format(string(c.TimeFormat)))
-		return c
-	}
+	c.fields = appendFieldName(c.fields, key)
+	c.fields = appendTime(c.fields, value, c.TimeFormat)
+	return c
 }
 
 func (c context) AppendDuration(key string, value time.Duration) logger.Context {
@@ -310,59 +310,87 @@ func (c context) AppendDuration(key string, value time.Duration) logger.Context 
 		if c.TimeDurationUnit > 0 {
 			valueFloat /= float64(c.TimeDurationUnit)
 		}
-		return c.appendFloat(key, valueFloat, 64)
+		c.fields = appendFloat(c.fields, key, valueFloat, 64)
 	default:
 		valueInt := int64(value)
 		if c.TimeDurationUnit > 0 {
 			valueInt /= int64(c.TimeDurationUnit)
 		}
-		return c.appendInt64(key, valueInt)
+		c.fields = appendInt64(c.fields, key, valueInt)
 	}
+	return c
 }
 
-func (c context) appendFloat(key string, value float64, bitSize int) context {
+func appendTime(b []byte, value time.Time, format TimeFormat) []byte {
+	switch format {
+	case TimeUnix:
+		b = strconv.AppendInt(b, value.Unix(), 10)
+	case TimeUnixMs:
+		const nanoToMilliDivisor = 1000000
+		b = strconv.AppendInt(b, value.UnixNano()/nanoToMilliDivisor, 10)
+	case TimeUnixMicro:
+		const nanoToMicroDivisor = 1000
+		b = strconv.AppendInt(b, value.UnixNano()/nanoToMicroDivisor, 10)
+	case TimeUnixNano:
+		b = strconv.AppendInt(b, value.UnixNano(), 10)
+	default:
+		b = append(b, '"')
+		b = value.AppendFormat(b, string(format))
+		b = append(b, '"')
+	}
+	return b
+}
+
+func appendFloat(b []byte, key string, value float64, bitSize int) []byte {
 	const (
 		floatFormat    byte = 'f'
 		floatPrecision int  = -1
 	)
-	c = c.appendFieldName(key)
+	b = appendFieldName(b, key)
 	switch {
 	case math.IsNaN(value):
-		c.fields = append(c.fields, `"NaN"`...)
+		b = append(b, `"NaN"`...)
 	case math.IsInf(value, 1):
-		c.fields = append(c.fields, `"+Inf"`...)
+		b = append(b, `"+Inf"`...)
 	case math.IsInf(value, -1):
-		c.fields = append(c.fields, `"-Inf"`...)
+		b = append(b, `"-Inf"`...)
 	default:
-		c.fields = strconv.AppendFloat(c.fields, value, floatFormat, floatPrecision, bitSize)
+		b = strconv.AppendFloat(b, value, floatFormat, floatPrecision, bitSize)
 	}
-	return c
+	return b
 }
 
-func (c context) appendUint64(key string, value uint64) context {
-	c = c.appendFieldName(key)
-	c.fields = strconv.AppendUint(c.fields, value, 10)
-	return c
+func appendUint64(b []byte, key string, value uint64) []byte {
+	b = appendFieldName(b, key)
+	b = strconv.AppendUint(b, value, 10)
+	return b
 }
 
-func (c context) appendInt64(key string, value int64) context {
-	c = c.appendFieldName(key)
-	c.fields = strconv.AppendInt(c.fields, value, 10)
-	return c
+func appendInt64(b []byte, key string, value int64) []byte {
+	b = appendFieldName(b, key)
+	b = strconv.AppendInt(b, value, 10)
+	return b
 }
 
-func (c context) appendFieldName(key string) context {
-	c.fields = append(c.fields, ',')
-	c.fields = appendEscapedString(c.fields, key)
-	c.fields = append(c.fields, ':')
-	return c
+func appendFieldName(b []byte, key string) []byte {
+	b = append(b, ',')
+	b = appendEscapedString(b, key)
+	b = append(b, ':')
+	return b
 }
 
-func (c context) appendRawFieldName(preEscapedKey string) context {
-	c.fields = append(c.fields, ',', '"')
-	c.fields = append(c.fields, preEscapedKey...)
-	c.fields = append(c.fields, '"', ':')
-	return c
+func appendFieldNameRaw(b []byte, preEscapedKey string) []byte {
+	b = append(b, ',', '"')
+	b = append(b, preEscapedKey...)
+	b = append(b, '"', ':')
+	return b
+}
+
+func appendEscapedString(b []byte, value string) []byte {
+	if out, err := json.Marshal(value); err == nil {
+		return append(b, out...)
+	}
+	return append(b, '"', '"')
 }
 
 func levelString(level logger.Level) string {
@@ -395,21 +423,4 @@ func inefficientlyEscapeJSON(value string) string {
 		return ""
 	}
 	return string(b[1 : len(b)-1])
-}
-
-func writeEscapedString(w io.Writer, value string) {
-	// using json.NewEncoder here instead will always result in an additional
-	// trailing newline, which we don't want.
-	if out, err := json.Marshal(value); err == nil {
-		w.Write(out)
-	} else {
-		w.Write([]byte(`""`))
-	}
-}
-
-func appendEscapedString(b []byte, value string) []byte {
-	if out, err := json.Marshal(value); err == nil {
-		return append(b, out...)
-	}
-	return append(b, '"', '"')
 }
