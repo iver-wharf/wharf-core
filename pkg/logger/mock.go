@@ -19,19 +19,23 @@ type MockLog struct {
 	Level Level
 	// Message is the final message that was used to submit this logged event.
 	Message string
-	// Fields holds each field added to this logged event. Some logged data is
-	// translated into this map array:
+	// Fields holds each field added to this logged event, in addition to the
+	// following fields:
 	//
-	// 	Event.WithScope("foo")   => MockLog.Fields["scope"] = "foo"
-	// 	Event.WithError(someErr) => MockLog.Fields["error"] = someErr
-	// 	Event.WithCaller("foo", 42)
+	// 	Event.SetScope("foo")   => MockLog.Fields["scope"] = "foo"
+	// 	Event.SetError(someErr) => MockLog.Fields["error"] = someErr
+	// 	Event.SetCaller("foo", 42)
 	// 		=> MockLog.Fields["caller"] = "foo"
 	// 		=> MockLog.Fields["line"] = 42
 	Fields map[string]interface{}
-	// FieldNames is a slice of strings with all the keys added to the Fields
-	// map. This includes the custom mapping of Event.WithScope,
-	// Event.WithError, and Event.WithCaller as mentioned in the Fields docs.
-	FieldNames []string
+	// FieldsAdded is a slice of strings with all the keys added to the Fields
+	// map. This includes the custom mapping of Event.SetScope,
+	// Event.SetError, and Event.SetCaller as mentioned in the Fields docs.
+	//
+	// If a field is added more than one time, then it will show up in this list
+	// equally many times. Useful for checking if fields are misstakenly added
+	// multiple times.
+	FieldsAdded []string
 }
 
 // NewMock creates a new Logger interface compatible type that holds additional
@@ -98,7 +102,7 @@ func (c mockCtx) WriteOut(level Level, message string) {
 func (c mockCtx) SetCaller(file string, line int) Context {
 	c.Fields["caller"] = file
 	c.Fields["line"] = line
-	c.FieldNames = append(c.FieldNames, "caller", "line")
+	c.FieldsAdded = append(c.FieldsAdded, "caller", "line")
 	return c
 }
 
@@ -120,6 +124,6 @@ func (c mockCtx) AppendDuration(k string, v time.Duration) Context { return c.ad
 
 func (c mockCtx) addField(key string, value interface{}) Context {
 	c.Fields[key] = value
-	c.FieldNames = append(c.FieldNames, key)
+	c.FieldsAdded = append(c.FieldsAdded, key)
 	return c
 }
