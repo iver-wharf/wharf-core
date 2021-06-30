@@ -28,7 +28,7 @@ type Context interface {
 	// Append... methods
 	WriteOut(level Level, message string)
 
-	// SetScope adds a scope value to this context.
+	// SetScope sets the scope value for this context.
 	//
 	// Calling this method multiple times shall override the previous value.
 	// An empty string signifies to unset this field.
