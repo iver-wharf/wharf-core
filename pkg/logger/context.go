@@ -37,7 +37,7 @@ type Context interface {
 	// differently. E.g. some may render it as yet another field named "scope",
 	// others may render it as a specific HTTP header in a request.
 	SetScope(value string) Context
-	// SetCaller adds a caller and its line value to this context.
+	// SetCaller sets the caller and its line value for this context.
 	//
 	// Calling this method multiple times shall override the previous value.
 	// An empty string on the file name signifies to unset this field.
@@ -46,7 +46,7 @@ type Context interface {
 	// differently. E.g. some may render it as yet another fields named "caller"
 	// and "line", others may render it as a specific HTTP header in a request.
 	SetCaller(file string, line int) Context
-	// SetError adds an error value to this context.
+	// SetError sets the error value for this context.
 	//
 	// Calling this method multiple times shall override the previous value.
 	// An nil signifies to unset this field.
