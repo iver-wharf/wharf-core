@@ -37,13 +37,10 @@ What you **will not** find in this repository:
 ## Dependencies
 
 - YAML library [gopkg.in/yaml.v2 (github.com/go-yaml/yaml)](https://github.com/go-yaml/yaml)
-
 - Configuration library [spf13/viper](https://github.com/spf13/viper)
-
-- There are others, but those are solely used in example tests, such as the
-  following (non-extensive list):
-
-  - [github.com/gin-gonic/gin](https://github.com/gin-gonic/gin)
+- Web framework [github.com/gin-gonic/gin](https://github.com/gin-gonic/gin)
+- Database ORM library [gorm.io/gorm](https://gorm.io/)
+- Terminal coloring library [github.com/fatih/color](https://github.com/fatih/color)
 
 ## Development
 
