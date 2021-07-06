@@ -41,7 +41,7 @@ var defaultConfig = Config{
 //go:embed testdata/embedded-config.yml
 var embeddedConfig []byte
 
-func ExampleConfig() {
+func ExampleNewBuilder() {
 	cfgBuilder := config.NewBuilder(defaultConfig)
 	cfgBuilder.AddConfigYAML(bytes.NewReader(embeddedConfig))
 	cfgBuilder.AddConfigYAMLFile("/etc/my-app/config.yml")
