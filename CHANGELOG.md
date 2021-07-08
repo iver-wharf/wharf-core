@@ -39,6 +39,6 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Added new error response functions. (#17)
 
 - Added `pkg/env` to bind environment variable of a range of different types to
-  local variables. Usage is aimed towards backward compatibility with old
+  local variables. Usage is aimed towards backward compatability with old
   environment variables before the age of `pkg/config`, as the `pkg/config`
   already provides much better techniques for loading settings. (#18)
