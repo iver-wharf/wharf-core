@@ -153,92 +153,100 @@ func WriteInvalidBindError(c *gin.Context, err error, detail string) {
 	})
 }
 
-// WriteAPIReadError uses WriteProblemError to write a 502 "Bad Gateway"
-// response with the type "/prob/api/unexpected-api-read-error".
+// WriteAPIClientReadError uses WriteProblemError to write a 502 "Bad Gateway"
+// response with the type "/prob/api-client/unexpected-read-error".
 //
 // Meant to be used on unexpected error when reading data using the Wharf API.
-func WriteAPIReadError(c *gin.Context, err error, detail string) {
+func WriteAPIClientReadError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
-		Type: "/prob/provider/unexpected-api-read-error",
-		Title: "Unexpected API read error.",
+		Type: "/prob/api-client/unexpected-read-error",
+		Title: "Unexpected API client read error.",
 		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
 }
 
-// WriteAPIWriteError uses WriteProblemError to write a 502 "Bad Gateway"
-// response with the type "/prob/api/unexpected-api-write-error".
+// WriteAPIClientWriteError uses WriteProblemError to write a 502 "Bad Gateway"
+// response with the type "/prob/api-client/unexpected-write-error".
 //
 // Meant to be used on unexpected error when writing data using the Wharf API.
-func WriteAPIWriteError(c *gin.Context, err error, detail string) {
+func WriteAPIClientWriteError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
-		Type: "/prob/provider/unexpected-api-write-error",
-		Title: "Unexpected API write error.",
+		Type: "/prob/api-client/unexpected-write-error",
+		Title: "Unexpected API client write error.",
 		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
 }
 
-// WriteResponseFormatError uses WriteProblemError to write a 502 "Bad Gateway"
-// response with the type "/prob/provider/unexpected-response-format".
+// WriteProviderResponseError uses WriteProblemError to write a
+// 502 "Bad Gateway" response with the type
+// "/prob/provider/unexpected-response-format".
 //
-// Meant to be used on unexpected error when the response format does not match our expectations.
-func WriteResponseFormatError(c *gin.Context, err error, detail string) {
+// Meant to be used on unexpected error when a provider plugin fails to parse
+// or interpret a response from the remote provider.
+func WriteProviderResponseError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
 		Type: "/prob/provider/unexpected-response-format",
-		Title: "Unexpected response format.",
+		Title: "Unexpected provider response format.",
+
 		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
 }
 
-// WriteFetchBuildDefinitionError uses WriteProblemError to write a 400 "Bad Request"
-// response with the type "/prob/provider/fetch-build-definition".
+// WriteFetchBuildDefinitionError uses WriteProblemError to write a
+// 502 "Bad Request" response with the type
+// "/prob/provider/fetch-build-definition".
 //
-// Meant to be used on error when fetching the build definition.
+// Meant to be used on error when the provider plugin fails to fetch the
+// build definition from the remote provider.
 func WriteFetchBuildDefinitionError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
 		Type: "/prob/provider/fetch-build-definition",
 		Title: "Error fetching build definition.",
-		Status: http.StatusBadRequest,
+		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
 }
 
-// WriteComposingProviderDataError uses WriteProblemError to write a 400 "Bad Request"
-// response with the type "/prob/provider/composing-provider-data".
+// WriteComposingProviderDataError uses WriteProblemError to write a
+// 502 "Bad Gateway" response with the type "/prob/provider/composing-provider-data".
 //
-// Meant to be used on error when composing provider data.
+// Meant to be used by the provider plugins on error when composing the
+// provider object to submit to the Wharf API, such as when it fails to parse
+// URLs received from the remote provider.
 func WriteComposingProviderDataError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
 		Type: "/prob/provider/composing-provider-data",
 		Title: "Error composing provider data.",
-		Status: http.StatusBadRequest,
+		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
 }
 
 // WriteTriggerError uses WriteProblemError to write a 502 "Bad Gateway"
-// response with the type "/prob/build/unexpected-trigger-error".
+// response with the type "/prob/api-client/unexpected-trigger-error".
 //
-// Meant to be used on unexpected error during build process regarding a trigger.
+// Meant to be used when unexpectedly failing to trigger a new build indirectly
+// from an Wharf API client, such as from a Wharf provider plugin.
 func WriteTriggerError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
-		Type: "/prob/build/unexpected-trigger-error",
+		Type: "/prob/api-client/unexpected-trigger-error",
 		Title: "Unexpected trigger error.",
 		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
 }
 
-// WriteAuthenticationError uses WriteProblemError to write a 401 "Unauthorized"
-// response with the type "prob/provider/authentication-error".
+// WriteUnauthorizedError uses WriteProblemError to write a 401 "Unauthorized"
+// response with the type "/prob/api/unauthorized".
 //
 // Meant to be used for failed authentication.
-func WriteAuthenticationError(c *gin.Context, err error, detail string) {
+func WriteUnauthorizedError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
-		Type: "prob/provider/authentication-error",
-		Title: "Error authenticating.",
+		Type: "/prob/api/unauthorized",
+		Title: "Unauthorized.",
 		Status: http.StatusUnauthorized,
 		Detail: detail,
 	})
