@@ -196,7 +196,7 @@ func WriteProviderResponseError(c *gin.Context, err error, detail string) {
 }
 
 // WriteFetchBuildDefinitionError uses WriteProblemError to write a
-// 502 "Bad Request" response with the type
+// 502 "Bad Gateway" response with the type
 // "/prob/provider/fetch-build-definition".
 //
 // Meant to be used on error when the provider plugin fails to fetch the
@@ -229,7 +229,7 @@ func WriteComposingProviderDataError(c *gin.Context, err error, detail string) {
 // response with the type "/prob/api-client/unexpected-trigger-error".
 //
 // Meant to be used when unexpectedly failing to trigger a new build indirectly
-// from an Wharf API client, such as from a Wharf provider plugin.
+// from a Wharf API client, such as from a Wharf provider plugin.
 func WriteTriggerError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
 		Type: "/prob/api-client/unexpected-trigger-error",
@@ -245,6 +245,19 @@ func WriteTriggerError(c *gin.Context, err error, detail string) {
 // Meant to be used for failed authentication.
 func WriteUnauthorizedError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
+		Type: "/prob/api/unauthorized",
+		Title: "Unauthorized.",
+		Status: http.StatusUnauthorized,
+		Detail: detail,
+	})
+}
+
+// WriteUnauthorized uses WriteProblem to write a 401 "Unauthorized"
+// response with the type "/prob/api/unauthorized".
+//
+// Meant to be used for failed authentication.
+func WriteUnauthorized(c *gin.Context, detail string) {
+	WriteProblem(c, problem.Response{
 		Type: "/prob/api/unauthorized",
 		Title: "Unauthorized.",
 		Status: http.StatusUnauthorized,
