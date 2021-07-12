@@ -2,13 +2,38 @@ package logger
 
 import "time"
 
-// MockLogger is a logger meant to be used in testing. It records all logs sent
-// to it and provides useful fields for you to verify that your application
-// logs as expected.
-type MockLogger struct {
+// Mock is a logger and a sink meant to be used in testing. It records all
+// logs sent to it and provides useful fields for you to verify that your
+// application logs as expected.
+type Mock struct {
 	// Logs is an array of logs recorded. Each logged event is stored as a
-	// separate item in this array..
+	// separate item in this array.
 	Logs []MockLog
+	// LogMessages is an array of log messages recorded. This complements the
+	// array of MockLog for easier assertion that the expected messages have been
+	// logged. Empty messages are also stored in this array as empty strings.
+	LogMessages []string
+}
+
+// NewMock creates a new Logger interface compatible type that holds additional
+// fields of the logs that have been submitted.
+func NewMock() *Mock {
+	return &Mock{}
+}
+
+// NewContext creates a new log event context for this mock. The scope is added
+// as a field unless it's an empty string.
+func (log *Mock) NewContext(scope string) Context {
+	ctx := mockCtx{
+		MockLog: MockLog{
+			Fields: make(map[string]interface{}),
+		},
+		logger: log,
+	}
+	if scope != "" {
+		ctx.addField("scope", scope)
+	}
+	return ctx
 }
 
 // MockLog is a single logged event with additional public fields containing
@@ -38,65 +63,49 @@ type MockLog struct {
 	FieldsAdded []string
 }
 
-// NewMock creates a new Logger interface compatible type that holds additional
-// fields of the logs that has been submitted.
-func NewMock() *MockLogger {
-	return &MockLogger{}
-}
-
 // Debug creates a new event using new contexts connected to this mock logger of
 // "debugging" logging level or higher.
-func (log *MockLogger) Debug() Event { return log.newEvent(LevelDebug) }
+func (log *Mock) Debug() Event { return log.newEvent(LevelDebug) }
 
 // Info creates a new event using new contexts connected to this mock logger of
 // "information" logging level or higher.
-func (log *MockLogger) Info() Event { return log.newEvent(LevelInfo) }
+func (log *Mock) Info() Event { return log.newEvent(LevelInfo) }
 
 // Warn creates a new event using new contexts connected to this mock logger of
 // "warning" logging level or higher.
-func (log *MockLogger) Warn() Event { return log.newEvent(LevelWarn) }
+func (log *Mock) Warn() Event { return log.newEvent(LevelWarn) }
 
 // Error creates a new event using new contexts connected to this mock logger of
 // "error" logging level or higher.
-func (log *MockLogger) Error() Event { return log.newEvent(LevelError) }
+func (log *Mock) Error() Event { return log.newEvent(LevelError) }
 
 // Panic creates a new event using new contexts connected to this mock logger of
 // "panic" logging level or higher.
 //
 // Compared to the other logging events, after submitting the logged
 // messages this method calls panic with the final message string.
-func (log *MockLogger) Panic() Event { return log.newEvent(LevelPanic) }
+func (log *Mock) Panic() Event { return log.newEvent(LevelPanic) }
 
-func (log *MockLogger) newEvent(level Level) Event {
+func (log *Mock) newEvent(level Level) Event {
 	var done DoneFunc
 	if level == LevelPanic {
 		done = panicString
 	}
-	return event{
-		level: level,
-		ctxs:  []Context{newMockContext(log)},
-		done:  done,
-	}
-}
-
-func newMockContext(logger *MockLogger) Context {
-	return mockCtx{
-		MockLog: MockLog{
-			Fields: map[string]interface{}{},
-		},
-		logger: logger,
-	}
+	return newEventFromSinks(level, "", done, []registeredSink{
+		{log, LevelDebug},
+	})
 }
 
 type mockCtx struct {
 	MockLog
-	logger *MockLogger
+	logger *Mock
 }
 
 func (c mockCtx) WriteOut(level Level, message string) {
 	c.Level = level
 	c.Message = message
 	c.logger.Logs = append(c.logger.Logs, c.MockLog)
+	c.logger.LogMessages = append(c.logger.LogMessages, message)
 }
 
 func (c mockCtx) SetCaller(file string, line int) Context {
@@ -106,7 +115,6 @@ func (c mockCtx) SetCaller(file string, line int) Context {
 	return c
 }
 
-func (c mockCtx) SetScope(v string) Context                        { return c.addField("scope", v) }
 func (c mockCtx) SetError(v error) Context                         { return c.addField("error", v) }
 func (c mockCtx) AppendString(k string, v string) Context          { return c.addField(k, v) }
 func (c mockCtx) AppendRune(k string, v rune) Context              { return c.addField(k, v) }
