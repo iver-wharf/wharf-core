@@ -44,7 +44,7 @@ func WriteProblem(c *gin.Context, prob problem.Response) {
 	if len(prob.Errors) == 0 && len(c.Errors) > 0 {
 		prob.Errors = c.Errors.Errors()
 	}
-	c.Header("Content-Type", "application/problem+json")
+	c.Header("Content-Type", problem.HTTPContentType)
 	c.JSON(prob.Status, prob)
 }
 

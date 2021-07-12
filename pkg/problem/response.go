@@ -1,7 +1,25 @@
 package problem
 
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
+
+	"github.com/iver-wharf/wharf-core/pkg/strutil"
+)
+
+// HTTPContentType is the value used in HTTP requests and responses for the
+// Content-Type header. This is defined by the IETF RFC-7807 and can therefore
+// not be changed.
+const HTTPContentType = "application/problem+json"
+
 // Response can be serialized into JSON and its fields follow the problem schema
 // defined by IETF RFC-7807.
+//
+// This type also conforms to the error interface by using the title and list
+// of errors as the error message.
 type Response struct {
 	// Type is a URI reference that identifies the problem type. The IETF
 	// RFC-7807 specification encourages that, when dereferenced, it provide
@@ -37,4 +55,46 @@ type Response struct {
 	// Error is an extended field for the regular Problem model defined in
 	// RFC-7807. It contains the string message of the error (if any).
 	Errors []string `json:"errors" example:"strconv.ParseUint: parsing \"-1\": invalid syntax"`
+}
+
+func (r Response) Error() string {
+	trimmedTitle := strings.TrimRight(strutil.FirstRuneLower(r.Title), ",.!; ")
+	return fmt.Sprintf("(problem) %s: %s", trimmedTitle, strings.Join(r.Errors, "; "))
+}
+
+func (r Response) String() string {
+	return fmt.Sprintf("{(problem) HTTP %d, %s\n    Title: %s\n   Detail: %s\n Error(s): [%s]\n Instance: %s }",
+		r.Status, r.Type, r.Title, r.Detail, strings.Join(r.Errors, "; "), r.Instance)
+}
+
+// IsHTTPResponse returns true if the HTTP response has the Content-Type of a
+// problem response:
+// 	Content-Type: application/problem+json
+func IsHTTPResponse(response *http.Response) bool {
+	if response.Header == nil {
+		return false
+	}
+	return response.Header.Get("Content-Type") == HTTPContentType
+}
+
+// ParseHTTPResponse attempts to unmarshal the body response as a problem
+// response. No validation check is made, so the user of this function is
+// assumed to check if the body is of the correct content type before calling
+// this function, for example via the IsHTTPResponse function.
+func ParseHTTPResponse(response *http.Response) (Response, error) {
+	resp, readErr := ioutil.ReadAll(response.Body)
+	if readErr != nil {
+		return Response{}, fmt.Errorf(
+			"failed to read problem response body: %w", readErr)
+	}
+	if closeErr := response.Body.Close(); closeErr != nil {
+		return Response{}, fmt.Errorf(
+			"failed to close problem response body reading: %w", closeErr)
+	}
+	var prob Response
+	if jsonErr := json.Unmarshal(resp, &prob); jsonErr != nil {
+		return Response{}, fmt.Errorf(
+			`failed to parse "%s" problem response: %w`, HTTPContentType, jsonErr)
+	}
+	return prob, nil
 }

@@ -53,6 +53,16 @@ type Event interface {
 	// multiple times with the same key may lead to unexpected behaviour.
 	WithString(key string, value string) Event
 
+	// WithStringf adds a formatted string field to this logged message. The
+	// formatting is the same applied from the fmt package. Calling this method
+	// multiple times with the same key may lead to unexpected behaviour.
+	WithStringf(key string, format string, args ...interface{}) Event
+
+	// WithStringer adds a string field to this logged message using the value
+	// from fmt.Stringer.String(). Calling this method multiple times with the
+	// same key may lead to unexpected behaviour.
+	WithStringer(key string, value fmt.Stringer) Event
+
 	// WithRune adds a rune field to this logged message. Calling this method
 	// multiple times with the same key may lead to unexpected behaviour.
 	WithRune(key string, value rune) Event
@@ -203,6 +213,20 @@ func (ev event) WithScope(value string) Event {
 
 func (ev event) WithString(key string, value string) Event {
 	return ev.with(func(ctx Context) Context { return ctx.AppendString(key, value) })
+}
+
+func (ev event) WithStringf(key string, format string, args ...interface{}) Event {
+	if len(ev.ctxs) > 0 {
+		return ev.WithString(key, fmt.Sprintf(format, args...))
+	}
+	return ev
+}
+
+func (ev event) WithStringer(key string, value fmt.Stringer) Event {
+	if len(ev.ctxs) > 0 {
+		return ev.WithString(key, value.String())
+	}
+	return ev
 }
 
 func (ev event) WithRune(key string, value rune) Event {

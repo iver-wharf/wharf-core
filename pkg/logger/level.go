@@ -1,6 +1,9 @@
 package logger
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // Level is the enum type of different logging levels used throughout this
 // package to categorize and filter different log events.
@@ -36,5 +39,24 @@ func (lvl Level) String() string {
 		return "Panic"
 	default:
 		return fmt.Sprintf("Level(%d)", byte(lvl))
+	}
+}
+
+// ParseLevel tries to convert a string to a logging level value. It supports
+// all the outputs from the logging level String() method, and some more.
+func ParseLevel(lvl string) (Level, error) {
+	switch strings.TrimSpace(strings.ToLower(lvl)) {
+	case "d", "debug", "debugging":
+		return LevelDebug, nil
+	case "i", "info", "information":
+		return LevelInfo, nil
+	case "w", "warn", "warning":
+		return LevelWarn, nil
+	case "e", "error":
+		return LevelError, nil
+	case "p", "panic":
+		return LevelPanic, nil
+	default:
+		return LevelDebug, fmt.Errorf("invalid logging level string: %q", lvl)
 	}
 }

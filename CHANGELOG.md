@@ -20,15 +20,20 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Added `pkg/config` with newly added `config.Config` interface and
   implementation to let you load configs from environment variables or YAML
-  files. This is done via [spf13/viper](https://github.com/spf13/viper). (#4)
+  files. This is done via [spf13/viper](https://github.com/spf13/viper).
+  (#4, #16)
 
 - Added `pkg/problem` and `pkg/ginutil` to easily use the IETF RFC-7808
   compatible `problem.Response`, originally taken from
   [wharf-api](https://github.com/iver-wharf/wharf-api). (#9)
-  
+
+- Added utility to `pkg/problem` to identify and parse HTTP problem responses
+  and made `problem.Response` conform to `error` and `fmt.Stringer` interfaces.
+  (#12)
+
 - Added `pkg/logger`, `pkg/logger/consolepretty`, and `pkg/logger/consolejson`
   as fast, low memory using, extensible, and highly customizable logging
   libraries. Heavily inspired by [rs/zerolog](https://github.com/rs/zerolog).
-  (#10)
+  (#10, #13, #15)
 
 - Added new error response functions. (#17)
