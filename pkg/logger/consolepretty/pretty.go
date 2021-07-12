@@ -206,9 +206,10 @@ type sink struct {
 
 // NewContext creates a new pretty-console logging Context using the
 // same configuration as the one given when creating the Sink.
-func (s sink) NewContext() logger.Context {
+func (s sink) NewContext(scope string) logger.Context {
 	return context{
 		Config: s.config,
+		scope:  scope,
 	}
 }
 
@@ -317,11 +318,6 @@ func escapeString(value string) string {
 		return fmt.Sprintf("`%s`", escapeStringReplacer.Replace(value))
 	}
 	return value
-}
-
-func (c context) SetScope(value string) logger.Context {
-	c.scope = value
-	return c
 }
 
 func (c context) SetCaller(file string, line int) logger.Context {

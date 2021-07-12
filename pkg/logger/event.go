@@ -36,19 +36,6 @@ type Event interface {
 	// "caller" and "line".
 	WithCaller(file string, line int) Event
 
-	// WithScope adds a caller field to the log contexts inside this log event.
-	//
-	// An empty string unsets the scope for this event.
-	//
-	// This method is called automatically by all Logger methods when creating the
-	// logger using NewScoped, though you can override the value set there by
-	// calling it again manually.
-	//
-	// It's up to the logger sink to decide how this error is rendered in the log
-	// message. Commonly, but not necessarily, this is rendered as a field with name
-	// "scope".
-	WithScope(value string) Event
-
 	// WithString adds a string field to this logged message. Calling this method
 	// multiple times with the same key may lead to unexpected behaviour.
 	WithString(key string, value string) Event
@@ -141,13 +128,21 @@ type event struct {
 // NewEvent creates a new event and prepares it to use a list of logging sinks
 // based on the logging level fed into it using the globally registered sinks
 // added using logger.AddOutput(...).
-func NewEvent(level Level, done DoneFunc) Event {
+func NewEvent(level Level, scope string, done DoneFunc) Event {
+	return newEventFromSinks(level, scope, done, registeredSinks)
+}
+
+func newEventFromSinks(level Level, scope string, done DoneFunc, sinks []registeredSink) Event {
+	if level < getLevelScoped(scope) {
+		return event{}
+	}
 	ctxs := contextPool.Get().([]Context)
 	ctxs = ctxs[:0]
-	for _, reg := range registeredSinks {
-		if level >= reg.minLevel {
-			ctxs = append(ctxs, reg.sink.NewContext())
+	for _, reg := range sinks {
+		if level < reg.minLevel {
+			continue
 		}
+		ctxs = append(ctxs, reg.sink.NewContext(scope))
 	}
 	ev := event{level, ctxs, done}
 	if caller, line := traceutil.CallerFileWithLineNum(); caller != "" {
@@ -205,10 +200,6 @@ func (ev event) returnPooledSlice() {
 
 func (ev event) WithCaller(file string, line int) Event {
 	return ev.with(func(ctx Context) Context { return ctx.SetCaller(file, line) })
-}
-
-func (ev event) WithScope(value string) Event {
-	return ev.with(func(ctx Context) Context { return ctx.SetScope(value) })
 }
 
 func (ev event) WithString(key string, value string) Event {

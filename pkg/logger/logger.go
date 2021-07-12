@@ -5,19 +5,51 @@ import (
 	"strings"
 )
 
+var (
+	minGlobalLevel  = LevelDebug
+	minScopedLevels = make(map[string]Level)
+	registeredSinks []registeredSink
+)
+
+// SetLevel will suppress all events (no matter if scoped or not) that has a
+// logging level lower than the provided value.
+//
+// If LevelSilence is used, then all logs will be disabled.
+func SetLevel(level Level) {
+	minGlobalLevel = level
+}
+
+// SetLevelScoped will suppress all events for a given scope that has a logging
+// level lower than the provided value.
+//
+// The scope name is case-insensitive.
+//
+// If an empty string is passed for the scope, then the filter will be applied
+// to events without a scope.
+//
+// If LevelSilence is used, then this scope will be completely disabled.
+func SetLevelScoped(level Level, scope string) {
+	minScopedLevels[strings.ToUpper(scope)] = level
+}
+
+func getLevelScoped(scope string) Level {
+	if level, ok := minScopedLevels[strings.ToUpper(scope)]; ok && level > minGlobalLevel {
+		return level
+	}
+	return minGlobalLevel
+}
+
 // Sink is an interface that creates logging contexts. Each sink could be for
 // different log collectors such as Kibana or Logstash, or simply a console
 // logging sink that outputs all the logs to STDOUT.
 type Sink interface {
-	NewContext() Context
+	NewContext(scope string) Context
 }
 
 type registeredSink struct {
 	sink     Sink
 	minLevel Level
 }
-
-var registeredSinks []registeredSink
 
 // ClearOutputs resets the outputs added by AddOutput. Should not be needed in
 // production code, but is quite useful to be called at the beginning of an
@@ -76,17 +108,11 @@ type logger struct {
 // New creates a new basic Logger without a scope. Use NewScoped instead to add
 // a "scope" field to each logged message.
 func New() Logger {
-	return logger{NewEvent}
-}
-
-func (log logger) Debug() Event { return log.newEvent(LevelDebug, nil) }
-func (log logger) Info() Event  { return log.newEvent(LevelInfo, nil) }
-func (log logger) Warn() Event  { return log.newEvent(LevelWarn, nil) }
-func (log logger) Error() Event { return log.newEvent(LevelError, nil) }
-func (log logger) Panic() Event { return log.newEvent(LevelPanic, panicString) }
-
-func panicString(message string) {
-	panic(message)
+	return logger{
+		newEvent: func(level Level, done DoneFunc) Event {
+			return NewEvent(level, "", done)
+		},
+	}
 }
 
 // NewScoped creates a new logger and assigns a scope to it. Useful when you
@@ -99,9 +125,19 @@ func panicString(message string) {
 func NewScoped(scope string) Logger {
 	return logger{
 		newEvent: func(level Level, done DoneFunc) Event {
-			return NewEvent(level, done).WithScope(scope)
+			return NewEvent(level, scope, done)
 		},
 	}
+}
+
+func (log logger) Debug() Event { return log.newEvent(LevelDebug, nil) }
+func (log logger) Info() Event  { return log.newEvent(LevelInfo, nil) }
+func (log logger) Warn() Event  { return log.newEvent(LevelWarn, nil) }
+func (log logger) Error() Event { return log.newEvent(LevelError, nil) }
+func (log logger) Panic() Event { return log.newEvent(LevelPanic, panicString) }
+
+func panicString(message string) {
+	panic(message)
 }
 
 type loggerWriter struct {

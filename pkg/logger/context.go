@@ -28,15 +28,6 @@ type Context interface {
 	// Append... methods
 	WriteOut(level Level, message string)
 
-	// SetScope sets the scope value for this context.
-	//
-	// Calling this method multiple times shall override the previous value.
-	// An empty string signifies to unset this field.
-	//
-	// In contrast to AppendString, the logging sink is allowed to render this
-	// differently. E.g. some may render it as yet another field named "scope",
-	// others may render it as a specific HTTP header in a request.
-	SetScope(value string) Context
 	// SetCaller sets the caller and its line value for this context.
 	//
 	// Calling this method multiple times shall override the previous value.

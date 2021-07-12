@@ -13,15 +13,18 @@ const (
 	// LevelDebug is the "debugging" logging level, and also the lowest logging
 	// level available.
 	LevelDebug Level = iota
-	// LevelInfo is the "information" logging level
+	// LevelInfo is the "information" logging level.
 	LevelInfo
-	// LevelWarn is the "warning" logging level
+	// LevelWarn is the "warning" logging level.
 	LevelWarn
-	// LevelError is the "error" logging level
+	// LevelError is the "error" logging level.
 	LevelError
 	// LevelPanic is the "panic" logging level, and also the highest logging
 	// level available.
 	LevelPanic
+	// LevelSilence will disable logging when used to configure an output, a
+	// scoped minimum logging level, or the global minimum logging level.
+	LevelSilence
 )
 
 // String returns a readable representation of the logging level.

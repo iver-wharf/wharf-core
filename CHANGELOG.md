@@ -34,6 +34,6 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Added `pkg/logger`, `pkg/logger/consolepretty`, and `pkg/logger/consolejson`
   as fast, low memory using, extensible, and highly customizable logging
   libraries. Heavily inspired by [rs/zerolog](https://github.com/rs/zerolog).
-  (#10, #13, #15)
+  (#10, #13, #15, #20)
 
 - Added new error response functions. (#17)
