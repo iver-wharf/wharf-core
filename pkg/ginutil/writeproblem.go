@@ -189,7 +189,6 @@ func WriteProviderResponseError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
 		Type: "/prob/provider/unexpected-response-format",
 		Title: "Unexpected provider response format.",
-
 		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
