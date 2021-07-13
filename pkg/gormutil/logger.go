@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/iver-wharf/wharf-core/internal/traceutil"
 	"github.com/iver-wharf/wharf-core/pkg/logger"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
@@ -30,7 +29,7 @@ type LoggerConfig struct {
 	// SlowThreshold sets what duration is considered a slow SQL operation.
 	// If an operation takes longer than this to complete then a warning log
 	// message will be emitted.
-	// 
+	//
 	// Set to 0 to disable.
 	SlowThreshold time.Duration
 }
@@ -88,8 +87,7 @@ func (log gormLog) Trace(_ context.Context, begin time.Time, fc func() (sql stri
 	switch {
 	case log.shouldLogError(err):
 		sql, rowsAffected := fc()
-		ev := log.Logger.Error().
-			WithCaller(traceutil.CallerFileWithLineNum())
+		ev := log.Logger.Error()
 		ev = withRowsAffected(ev, rowsAffected)
 		ev.WithDuration("elapsed", elapsed).
 			WithError(err).
@@ -97,8 +95,7 @@ func (log gormLog) Trace(_ context.Context, begin time.Time, fc func() (sql stri
 			Message("Error in SQL.")
 	case log.shouldLogWarnSlow(elapsed):
 		sql, rowsAffected := fc()
-		ev := log.Logger.Warn().
-			WithCaller(traceutil.CallerFileWithLineNum())
+		ev := log.Logger.Warn()
 		ev = withRowsAffected(ev, rowsAffected)
 		ev.WithDuration("elapsed", elapsed).
 			WithDuration("threshold", log.SlowThreshold).
@@ -106,8 +103,7 @@ func (log gormLog) Trace(_ context.Context, begin time.Time, fc func() (sql stri
 			Message("Slow SQL.")
 	case log.shouldLogDebug():
 		sql, rowsAffected := fc()
-		ev := log.Logger.Debug().
-			WithCaller(traceutil.CallerFileWithLineNum())
+		ev := log.Logger.Debug()
 		ev = withRowsAffected(ev, rowsAffected)
 		ev.WithDuration("elapsed", elapsed).
 			WithString("sql", sql).

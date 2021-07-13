@@ -174,7 +174,7 @@ func TestLoggerTraceLogsFields(t *testing.T) {
 
 			require.NotEmpty(t, logMock.Logs)
 			assert.Equal(t, tc.wantLogLevel, logMock.Logs[0].Level, "logged level")
-			assert.ElementsMatch(t, tc.wantFieldNames, logMock.Logs[0].FieldNames, "logged field names")
+			assert.ElementsMatch(t, tc.wantFieldNames, logMock.Logs[0].FieldsAdded, "logged field names")
 			assert.Equal(t, fakeSQL, logMock.Logs[0].Fields["sql"], "logged 'sql' field")
 			assert.Equal(t, affectedRows, logMock.Logs[0].Fields["rows"], "logged 'rows' field")
 		})
@@ -222,7 +222,7 @@ func TestLoggerOutput(t *testing.T) {
 
 	require.NotEmpty(t, log.Logs, "logged messages")
 	assert.Equal(t, 1, len(log.Logs), "logged message count")
-	assert.ElementsMatch(t, wantFieldNames, log.Logs[0].FieldNames)
+	assert.ElementsMatch(t, wantFieldNames, log.Logs[0].FieldsAdded)
 }
 
 func logLevelStr(lvl gormlogger.LogLevel) string {
