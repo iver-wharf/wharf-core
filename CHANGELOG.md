@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v1.0.0 (WIP)
+## v1.0.0 (2021-07-13)
 
 - Added `pkg/app` with newly added `app.Version` struct together with an example
   of how to use with [gin-gonic/gin](https://github.com/gin-gonic/gin).
