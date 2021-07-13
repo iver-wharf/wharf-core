@@ -8,6 +8,9 @@ import (
 	"github.com/iver-wharf/wharf-core/pkg/problem"
 )
 
+// RecoverProblem is a Gin middleware that uses RecoverProblemHandle.
+var RecoverProblem = gin.CustomRecovery(RecoverProblemHandle)
+
 // RecoverProblemHandle writes a HTTP "Internal Server Error" problem response.
 // Meant to be used with the gin-gonic panic recover middleware.
 func RecoverProblemHandle(c *gin.Context, err interface{}) {
