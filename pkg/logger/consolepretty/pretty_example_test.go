@@ -16,5 +16,5 @@ func ExampleNew() {
 	logger.New().Debug().Message("Sample message.")
 
 	// Output:
-	// foo:[DEBUG | consolepretty/pretty_example_test.go] Sample message.
+	// foo:[DEBUG|consolepretty/pretty_example_test.go] Sample message.
 }
