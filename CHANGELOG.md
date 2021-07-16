@@ -12,6 +12,15 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v1.1.0 (WIP)
+
+- Changed default field colors in `pkg/logger/consolepretty` from yellow to
+  white. (#23)
+
+- Changed formatting in `pkg/logger/consolepretty` to have less whitespace
+  around the scope and logging level, as well as adding padding and trimming to
+  the caller so that it stays at a constant width for a given scope. (#23)
+
 ## v1.0.0 (2021-07-13)
 
 - Added `pkg/app` with newly added `app.Version` struct together with an example
