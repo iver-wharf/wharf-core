@@ -470,7 +470,8 @@ func printedIntLenFast(number int) int {
 		return 8
 	case number < 1000000000:
 		return 9
-	default: // since 2,147,483,647 is the largest int anyway
+	// for our purposes here, handling >int32 max value is not needed
+	default:
 		return 10
 	}
 }
