@@ -133,55 +133,55 @@ type Config struct {
 	// Prefix sets an optional string added to the beginning of the log message.
 	//
 	// When set to "" (empty string):
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
 	// When set to "foo:":
-	// 	foo:[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
+	// 	foo:Jan 02 15:04Z [INFO |example.go:20] Sample message.
 	Prefix string
 
 	// DisableDate removes the date field from the log when set to true.
 	//
 	// When set to false:
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
 	// When set to true:
-	// 	[INFO | example.go:20] Sample message.
+	// 	[INFO |example.go:20] Sample message.
 	DisableDate bool
 
 	// DisableCaller removes the caller file name and line fields from the log
 	// when set to true.
 	//
 	// When set to false:
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
 	// With set to true:
-	// 	[INFO | 2006-01-02T15:04:05Z] Sample message.
+	// 	Jan 02 15:04Z [INFO ] Sample message.
 	DisableCaller bool
 
 	// DisableCallerLine removes just the caller line field from the log
 	// when set to true, but leaves the caller file name as-is.
 	//
 	// When set to false:
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
 	// With set to true:
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go] Sample message.
 	DisableCallerLine bool
 
 	// CallerMaxLength will trim the caller file and line down to this length
 	// if set to a value of 1 or higher.
 	//
 	// When set to 0:
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
 	// With set to 10:
-	// 	[INFO | 2006-01-02T15:04:05Z | …ple.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |…ple.go:20] Sample message.
 	CallerMaxLength int
 
 	// CallerMinLength will pad the caller file and line with spaces so that it
 	// reaches the target character width.
 	//
 	// When set to 0:
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
-	// 	[INFO | 2006-01-02T15:04:05Z | test.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |test.go:20] Sample message.
 	// With set to 13:
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
-	// 	[INFO | 2006-01-02T15:04:05Z | test.go:20   ] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |test.go:20   ] Sample message.
 	CallerMinLength int
 }
 
