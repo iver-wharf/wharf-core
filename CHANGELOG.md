@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v1.1.0 (WIP)
+## v1.1.0 (2021-08-17)
 
 - Changed default field colors in `pkg/logger/consolepretty` from yellow to
   white. (#23)
