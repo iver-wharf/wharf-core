@@ -48,5 +48,5 @@ func ExampleNewScoped() {
 	log.Info().Message("first log.")
 
 	// Output:
-	// [INFO  | example] first log.
+	// [INFO |example] first log.
 }

@@ -107,8 +107,8 @@ var DefaultColorConfig = ColorConfig{
 	LevelPanic:          color.New(color.FgHiWhite, color.BgRed, color.Bold),
 	FieldKey:            color.New(color.FgHiBlack, color.Italic),
 	FieldDelimiter:      color.New(color.FgHiBlack, color.Italic),
-	FieldValue:          color.New(color.FgHiYellow),
-	FieldValueZero:      color.New(color.FgYellow, color.Italic),
+	FieldValue:          color.New(color.FgWhite),
+	FieldValueZero:      color.New(color.FgHiBlack, color.Italic),
 	ErrorKey:            color.New(color.FgRed, color.Italic, color.Bold),
 	ErrorDelimiter:      color.New(color.FgRed, color.Italic),
 	ErrorValue:          color.New(color.FgHiRed),
@@ -133,43 +133,65 @@ type Config struct {
 	// Prefix sets an optional string added to the beginning of the log message.
 	//
 	// When set to "" (empty string):
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
 	// When set to "foo:":
-	// 	foo:[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
+	// 	foo:Jan 02 15:04Z [INFO |example.go:20] Sample message.
 	Prefix string
 
 	// DisableDate removes the date field from the log when set to true.
 	//
 	// When set to false:
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
 	// When set to true:
-	// 	[INFO | example.go:20] Sample message.
+	// 	[INFO |example.go:20] Sample message.
 	DisableDate bool
 
 	// DisableCaller removes the caller file name and line fields from the log
 	// when set to true.
 	//
 	// When set to false:
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
 	// With set to true:
-	// 	[INFO | 2006-01-02T15:04:05Z] Sample message.
+	// 	Jan 02 15:04Z [INFO ] Sample message.
 	DisableCaller bool
 
 	// DisableCallerLine removes just the caller line field from the log
 	// when set to true, but leaves the caller file name as-is.
 	//
 	// When set to false:
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
 	// With set to true:
-	// 	[INFO | 2006-01-02T15:04:05Z | example.go] Sample message.
+	// 	Jan 02 15:04Z [INFO |example.go] Sample message.
 	DisableCallerLine bool
+
+	// CallerMaxLength will trim the caller file and line down to this length
+	// if set to a value of 1 or higher.
+	//
+	// When set to 0:
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
+	// With set to 10:
+	// 	Jan 02 15:04Z [INFO |…ple.go:20] Sample message.
+	CallerMaxLength int
+
+	// CallerMinLength will pad the caller file and line with spaces so that it
+	// reaches the target character width.
+	//
+	// When set to 0:
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |test.go:20] Sample message.
+	// With set to 13:
+	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
+	// 	Jan 02 15:04Z [INFO |test.go:20   ] Sample message.
+	CallerMinLength int
 }
 
 // DefaultConfig is the config used in New to populate some values if left
 // unset. Changing this global value also changes the fallback values used in
 // New.
 var DefaultConfig = Config{
-	DateFormat: "Jan-02 15:04Z0700",
+	DateFormat:      "Jan-02 15:04Z0700",
+	CallerMaxLength: 23,
+	CallerMinLength: 23,
 }
 
 // Default is a logger Sink that outputs human-readable logs to the console
@@ -240,15 +262,31 @@ func (c context) WriteOut(level logger.Level, message string) {
 	coloring.PreMessageDelimiter.Fprint(&buf, "[")
 	c.writeLevel(&buf, level)
 	if c.scope != "" {
-		coloring.PreMessageDelimiter.Fprint(&buf, " | ")
+		coloring.PreMessageDelimiter.Fprint(&buf, "|")
 		coloring.Scope.Fprint(&buf, c.scope)
 	}
 	if c.callerFile != "" && !c.DisableCaller {
-		coloring.PreMessageDelimiter.Fprint(&buf, " | ")
-		coloring.CallerFile.Fprint(&buf, c.callerFile)
+		coloring.PreMessageDelimiter.Fprint(&buf, "|")
+		writtenWidth := 0
+		maxFileWidth := c.Config.CallerMaxLength
+		if maxFileWidth > 0 {
+			if !c.DisableCallerLine {
+				maxFileWidth-- // for the delimiter
+				maxFileWidth -= printedIntLenFast(c.callerLine)
+			}
+			writtenWidth = c.writeTrimmedLeft(&buf, coloring.CallerFile, c.callerFile, maxFileWidth)
+		} else {
+			coloring.CallerFile.Fprint(&buf, c.callerFile)
+			writtenWidth = len(c.callerFile)
+		}
 		if !c.DisableCallerLine {
 			coloring.CallerDelimiter.Fprint(&buf, ":")
-			coloring.CallerLine.Fprint(&buf, strconv.FormatInt(int64(c.callerLine), 10))
+			lineStr := strconv.FormatInt(int64(c.callerLine), 10)
+			coloring.CallerLine.Fprint(&buf, lineStr)
+			writtenWidth += len(lineStr) + 1
+		}
+		for i := writtenWidth; i < c.Config.CallerMinLength; i++ {
+			buf.WriteRune(' ')
 		}
 	}
 	coloring.PreMessageDelimiter.Fprint(&buf, "]")
@@ -278,7 +316,8 @@ func (c context) WriteOut(level logger.Level, message string) {
 		}
 		coloring.ErrorKey.Fprint(&buf, "error")
 		coloring.ErrorDelimiter.Fprint(&buf, "=")
-		coloring.ErrorValue.Fprint(&buf, c.err.Error())
+		str, _ := getPrintableStringRepresentation(strings.TrimSpace(c.err.Error()))
+		coloring.ErrorValue.Fprint(&buf, str)
 		buf.WriteRune(' ')
 		coloring.ErrorType.Fprintf(&buf, "(%T)", c.err)
 	}
@@ -384,5 +423,55 @@ func (c context) writeLevel(w io.Writer, level logger.Level) {
 		c.Coloring.LevelPanic.Fprint(w, "PANIC")
 	default:
 		c.Coloring.LevelDebug.Fprint(w, "???  ")
+	}
+}
+
+func (c context) writeTrimmedLeft(w io.Writer, col *color.Color, value string, maxLen int) int {
+	const ellipsis = "…"
+	valueLen := len(value)
+	switch {
+	case valueLen == 0 || maxLen <= 0:
+		return 0
+	case maxLen == 1 && valueLen > 1:
+		col.Fprint(w, ellipsis)
+		return 1
+	case valueLen > maxLen:
+		// +1 to make room for the ellipsis
+		sliceStartIndex := valueLen - maxLen + 1
+		col.Fprint(w, ellipsis, value[sliceStartIndex:])
+		return maxLen
+	default:
+		col.Fprint(w, value)
+		return valueLen
+	}
+}
+
+func printedIntLenFast(number int) int {
+	// could do log10(number), but as the benchmark shows, that's approx 8-10
+	// times slower
+	switch {
+	case number < 0:
+		return printedIntLenFast(-number) + 1 // +1 for the sign symbol
+	case number < 10:
+		return 1
+	case number < 100:
+		return 2
+	case number < 1000:
+		return 3
+	case number < 10000:
+		return 4
+	case number < 100000:
+		return 5
+	case number < 1000000:
+		return 6
+	case number < 10000000:
+		return 7
+	case number < 100000000:
+		return 8
+	case number < 1000000000:
+		return 9
+	// for our purposes here, handling >int32 max value is not needed
+	default:
+		return 10
 	}
 }
