@@ -159,8 +159,8 @@ func WriteInvalidBindError(c *gin.Context, err error, detail string) {
 // Meant to be used on unexpected error when reading data using the Wharf API.
 func WriteAPIClientReadError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
-		Type: "/prob/api-client/unexpected-read-error",
-		Title: "Unexpected API client read error.",
+		Type:   "/prob/api-client/unexpected-read-error",
+		Title:  "Unexpected API client read error.",
 		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
@@ -172,8 +172,8 @@ func WriteAPIClientReadError(c *gin.Context, err error, detail string) {
 // Meant to be used on unexpected error when writing data using the Wharf API.
 func WriteAPIClientWriteError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
-		Type: "/prob/api-client/unexpected-write-error",
-		Title: "Unexpected API client write error.",
+		Type:   "/prob/api-client/unexpected-write-error",
+		Title:  "Unexpected API client write error.",
 		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
@@ -187,8 +187,8 @@ func WriteAPIClientWriteError(c *gin.Context, err error, detail string) {
 // or interpret a response from the remote provider.
 func WriteProviderResponseError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
-		Type: "/prob/provider/unexpected-response-format",
-		Title: "Unexpected provider response format.",
+		Type:   "/prob/provider/unexpected-response-format",
+		Title:  "Unexpected provider response format.",
 		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
@@ -202,8 +202,8 @@ func WriteProviderResponseError(c *gin.Context, err error, detail string) {
 // build definition from the remote provider.
 func WriteFetchBuildDefinitionError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
-		Type: "/prob/provider/fetch-build-definition",
-		Title: "Error fetching build definition.",
+		Type:   "/prob/provider/fetch-build-definition",
+		Title:  "Error fetching build definition.",
 		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
@@ -217,8 +217,8 @@ func WriteFetchBuildDefinitionError(c *gin.Context, err error, detail string) {
 // URLs received from the remote provider.
 func WriteComposingProviderDataError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
-		Type: "/prob/provider/composing-provider-data",
-		Title: "Error composing provider data.",
+		Type:   "/prob/provider/composing-provider-data",
+		Title:  "Error composing provider data.",
 		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
@@ -231,8 +231,8 @@ func WriteComposingProviderDataError(c *gin.Context, err error, detail string) {
 // from a Wharf API client, such as from a Wharf provider plugin.
 func WriteTriggerError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
-		Type: "/prob/api-client/unexpected-trigger-error",
-		Title: "Unexpected trigger error.",
+		Type:   "/prob/api-client/unexpected-trigger-error",
+		Title:  "Unexpected trigger error.",
 		Status: http.StatusBadGateway,
 		Detail: detail,
 	})
@@ -244,8 +244,8 @@ func WriteTriggerError(c *gin.Context, err error, detail string) {
 // Meant to be used for failed authentication.
 func WriteUnauthorizedError(c *gin.Context, err error, detail string) {
 	WriteProblemError(c, err, problem.Response{
-		Type: "/prob/api/unauthorized",
-		Title: "Unauthorized.",
+		Type:   "/prob/api/unauthorized",
+		Title:  "Unauthorized.",
 		Status: http.StatusUnauthorized,
 		Detail: detail,
 	})
@@ -257,8 +257,8 @@ func WriteUnauthorizedError(c *gin.Context, err error, detail string) {
 // Meant to be used for failed authentication.
 func WriteUnauthorized(c *gin.Context, detail string) {
 	WriteProblem(c, problem.Response{
-		Type: "/prob/api/unauthorized",
-		Title: "Unauthorized.",
+		Type:   "/prob/api/unauthorized",
+		Title:  "Unauthorized.",
 		Status: http.StatusUnauthorized,
 		Detail: detail,
 	})
