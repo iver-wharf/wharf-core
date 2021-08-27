@@ -12,6 +12,12 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v1.2.0 (WIP)
+
+- Moved `wharf-api/internal/httputils` to `wharf-core/pkg/cacertutil` in
+  preparation to delete it from the wharf-api, wharf-provider-github, and
+  wharf-provider-gitlab repos. (#27)
+
 ## v1.1.0 (2021-08-20)
 
 - Changed default field colors in `pkg/logger/consolepretty` from yellow to
