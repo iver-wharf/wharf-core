@@ -14,7 +14,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 ## v1.2.0 (WIP)
 
-- Moved `wharf-api/internal/httputils` to `wharf-core/pkg/cacertutil` in
+- Added `wharf-core/pkg/cacertutil`, taken from `wharf-api/internal/httputils` in
   preparation to delete it from the wharf-api, wharf-provider-github,
   wharf-provider-gitlab, and wharf-provider-azuredevops repos. (#27)
 
