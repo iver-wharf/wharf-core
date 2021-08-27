@@ -17,7 +17,7 @@ var log = logger.NewScoped("CA-CERT-UTIL")
 // Argument must point to an existing file with PEM formatted certificates.
 //
 // Based on https://forfuncsake.github.io/post/2017/08/trust-extra-ca-cert-in-go-app/
-func NewHttpClientWithCerts(localCertFile string) (*http.Client, error) {
+func NewHTTPClientWithCerts(localCertFile string) (*http.Client, error) {
 	rootCAs := getCertPoolFromEnvironment()
 	if err := appendCertsFromFile(rootCAs, localCertFile); err != nil {
 		return nil, err
