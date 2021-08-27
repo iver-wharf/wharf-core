@@ -12,7 +12,7 @@ import (
 
 var log = logger.NewScoped("CA-CERT-UTIL")
 
-// NewHttpClientWithCerts creates a fresh net/http.Client populated with some
+// NewHTTPClientWithCerts creates a fresh net/http.Client populated with some
 // root CA certificates from file.
 // Argument must point to an existing file with PEM formatted certificates.
 //
@@ -35,8 +35,6 @@ func NewHTTPClientWithCerts(localCertFile string) (*http.Client, error) {
 	return client, nil
 }
 
-// getCertPoolFromEnvironment returns the SystemCertPool if successful,
-// otherwise it returns an empty pool.
 func getCertPoolFromEnvironment() (rootCAs *x509.CertPool) {
 	rootCAs, _ = x509.SystemCertPool()
 	if rootCAs == nil {
