@@ -12,6 +12,12 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v1.2.0 (WIP)
+
+- Added `wharf-core/pkg/cacertutil`, taken from `wharf-api/internal/httputils`,
+  in preparation to delete it from the wharf-api, wharf-provider-github,
+  wharf-provider-gitlab, and wharf-provider-azuredevops repos. (#27)
+
 ## v1.1.0 (2021-08-20)
 
 - Changed default field colors in `pkg/logger/consolepretty` from yellow to
@@ -25,7 +31,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Added `pkg/app` with newly added `app.Version` struct together with an example
   of how to use with [gin-gonic/gin](https://github.com/gin-gonic/gin).
-	Use this for versioning your built APIs and command-line programs. (#2)
+  Use this for versioning your built APIs and command-line programs. (#2)
 
 - Added `pkg/config` with newly added `config.Config` interface and
   implementation to let you load configs from environment variables or YAML

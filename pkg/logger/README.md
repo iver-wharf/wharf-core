@@ -10,7 +10,7 @@ Sample output of the different pre-packaged `Sink` types.
 
 ### pkg/logger/consolejson
 
-``` json
+```json
 {"level":"debug","date":"2021-06-18T15:01:29+02:00","caller":"wharf-core/main.go","line":20,"scope":"TEST","message":"Sample","hello":"world"}
 {"level":"info","date":"2021-06-18T15:01:29+02:00","caller":"wharf-core/main.go","line":21,"scope":"TEST","message":"Sample","hello":"world","error":"EOF"}
 {"level":"warn","date":"2021-06-18T15:01:29+02:00","caller":"wharf-core/main.go","line":22,"scope":"TEST","message":"Sample","hello":"world","someSpan":1000000000}
