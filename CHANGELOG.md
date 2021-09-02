@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v1.2.0 (WIP)
+## v1.2.0 (2021-09-03)
 
 - Added `wharf-core/pkg/cacertutil`, taken from `wharf-api/internal/httputils`,
   in preparation to delete it from the wharf-api, wharf-provider-github,
