@@ -18,6 +18,21 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   in preparation to delete it from the wharf-api, wharf-provider-github,
   wharf-provider-gitlab, and wharf-provider-azuredevops repos. (#27)
 
+- Added `Event.With(func(Event) Event) Event` to `wharf-core/pkg/logger` to
+  make it easier to reuse field inside a certain scope: (#29)
+
+  ```go
+  func someFunc(group, name string) {
+    logArgs := func(ev logger.Event) logger.Event {
+      return ev.
+        WithString("group", group).
+        WithString("name", name)
+    }
+
+    log.Debug().With(logArgs).Message("Foo bar.")
+  }
+  ```
+
 ## v1.1.0 (2021-08-20)
 
 - Changed default field colors in `pkg/logger/consolepretty` from yellow to
