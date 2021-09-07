@@ -14,7 +14,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 ## v1.3.0 (WIP)
 
-- Added `Event.With(func(Event) Event) Event` to `wharf-core/pkg/logger` to
+- Added `Event.WithFunc(func(Event) Event) Event` to `wharf-core/pkg/logger` to
   make it easier to reuse field inside a certain scope: (#29)
 
   ```go
@@ -25,7 +25,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
         WithString("name", name)
     }
 
-    log.Debug().With(logArgs).Message("Foo bar.")
+    log.Debug().WithFunc(logArgs).Message("Foo bar.")
   }
   ```
 

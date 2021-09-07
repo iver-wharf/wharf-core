@@ -26,10 +26,10 @@ type Event interface {
 	// 	ev.WithString("hello", "world").Message("")
 	Message(message string)
 
-	// With applies a function to the event and then forwards the return value.
+	// WithFunc applies a function to the event and then forwards the return value.
 	//
 	// Useful for reusing "with statements" for multiple logs.
-	With(f func(Event) Event) Event
+	WithFunc(f func(Event) Event) Event
 
 	// WithCaller adds a caller field to the log contexts inside this log event.
 	//
@@ -203,7 +203,7 @@ func (ev event) returnPooledSlice() {
 	}
 }
 
-func (ev event) With(f func(Event) Event) Event {
+func (ev event) WithFunc(f func(Event) Event) Event {
 	return f(ev)
 }
 
