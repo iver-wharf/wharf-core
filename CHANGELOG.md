@@ -12,11 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v1.2.0 (2021-09-07)
-
-- Added `wharf-core/pkg/cacertutil`, taken from `wharf-api/internal/httputils`,
-  in preparation to delete it from the wharf-api, wharf-provider-github,
-  wharf-provider-gitlab, and wharf-provider-azuredevops repos. (#27)
+## v1.3.0 (WIP)
 
 - Added `Event.With(func(Event) Event) Event` to `wharf-core/pkg/logger` to
   make it easier to reuse field inside a certain scope: (#29)
@@ -32,6 +28,12 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
     log.Debug().With(logArgs).Message("Foo bar.")
   }
   ```
+
+## v1.2.0 (2021-09-07)
+
+- Added `wharf-core/pkg/cacertutil`, taken from `wharf-api/internal/httputils`,
+  in preparation to delete it from the wharf-api, wharf-provider-github,
+  wharf-provider-gitlab, and wharf-provider-azuredevops repos. (#27)
 
 ## v1.1.0 (2021-08-20)
 
