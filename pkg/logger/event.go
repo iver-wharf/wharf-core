@@ -26,6 +26,11 @@ type Event interface {
 	// 	ev.WithString("hello", "world").Message("")
 	Message(message string)
 
+	// WithFunc applies a function to the event and then forwards the return value.
+	//
+	// Useful for reusing "with statements" for multiple logs.
+	WithFunc(f func(Event) Event) Event
+
 	// WithCaller adds a caller field to the log contexts inside this log event.
 	//
 	// This method is called automatically by NewEvent and all Logger methods,
@@ -196,6 +201,10 @@ func (ev event) returnPooledSlice() {
 	if ev.ctxs != nil {
 		contextPool.Put(ev.ctxs)
 	}
+}
+
+func (ev event) WithFunc(f func(Event) Event) Event {
+	return f(ev)
 }
 
 func (ev event) WithCaller(file string, line int) Event {

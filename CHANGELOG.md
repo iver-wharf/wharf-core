@@ -12,6 +12,23 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
+## v1.3.0 (WIP)
+
+- Added `Event.WithFunc(func(Event) Event) Event` to `wharf-core/pkg/logger` to
+  make it easier to reuse field inside a certain scope: (#29)
+
+  ```go
+  func someFunc(group, name string) {
+    logArgs := func(ev logger.Event) logger.Event {
+      return ev.
+        WithString("group", group).
+        WithString("name", name)
+    }
+
+    log.Debug().WithFunc(logArgs).Message("Foo bar.")
+  }
+  ```
+
 ## v1.2.0 (2021-09-07)
 
 - Added `wharf-core/pkg/cacertutil`, taken from `wharf-api/internal/httputils`,
