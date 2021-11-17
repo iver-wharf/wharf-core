@@ -183,15 +183,47 @@ type Config struct {
 	// 	Jan 02 15:04Z [INFO |example.go:20] Sample message.
 	// 	Jan 02 15:04Z [INFO |test.go:20   ] Sample message.
 	CallerMinLength int
+
+	// ScopeMaxLength will trim the scope down to this length if set to a value
+	// of 1 or higher.
+	//
+	// When set to 0:
+	// 	Jan 02 15:04Z [INFO |GORM-debug] Sample message.
+	// With set to 5:
+	// 	Jan 02 15:04Z [INFO |GORM…] Sample message.
+	ScopeMaxLength int
+
+	// ScopeMinLength will pad the scope with spaces so that it reaches the
+	// target character width.
+	//
+	// When set to 0:
+	// 	Jan 02 15:04Z [INFO |GORM] Sample message.
+	// 	Jan 02 15:04Z [INFO |GORM-debug] Sample message.
+	// With set to 12:
+	// 	Jan 02 15:04Z [INFO |GORM        ] Sample message.
+	// 	Jan 02 15:04Z [INFO |GORM-debug  ] Sample message.
+	ScopeMinLength int
+
+	// ScopeMinLengthAuto will automatically pad the scope with spaces to
+	// accommodate for the longest scope created by logger.NewScoped.
+	//
+	// When set to false:
+	// 	Jan 02 15:04Z [INFO |GORM] Sample message.
+	// 	Jan 02 15:04Z [INFO |GORM-debug] Sample message.
+	// With set to true:
+	// 	Jan 02 15:04Z [INFO |GORM      ] Sample message.
+	// 	Jan 02 15:04Z [INFO |GORM-debug] Sample message.
+	ScopeMinLengthAuto bool
 }
 
 // DefaultConfig is the config used in New to populate some values if left
 // unset. Changing this global value also changes the fallback values used in
 // New.
 var DefaultConfig = Config{
-	DateFormat:      "Jan-02 15:04Z0700",
-	CallerMaxLength: 23,
-	CallerMinLength: 23,
+	DateFormat:         "Jan-02 15:04Z0700",
+	CallerMaxLength:    23,
+	CallerMinLength:    23,
+	ScopeMinLengthAuto: true,
 }
 
 // Default is a logger Sink that outputs human-readable logs to the console
@@ -261,9 +293,21 @@ func (c context) WriteOut(level logger.Level, message string) {
 	}
 	coloring.PreMessageDelimiter.Fprint(&buf, "[")
 	c.writeLevel(&buf, level)
-	if c.scope != "" {
+	if c.scope != "" || c.Config.ScopeMinLength > 0 || c.Config.ScopeMinLengthAuto {
 		coloring.PreMessageDelimiter.Fprint(&buf, "|")
-		coloring.Scope.Fprint(&buf, c.scope)
+		scopeWrittenWidth := len(c.scope)
+		if c.Config.ScopeMaxLength > 0 {
+			scopeWrittenWidth = c.writeTrimmedRight(&buf, coloring.Scope, c.scope, c.Config.ScopeMaxLength)
+		} else {
+			coloring.Scope.Fprint(&buf, c.scope)
+		}
+		scopeMinWidth := c.Config.ScopeMinLength
+		if c.Config.ScopeMinLengthAuto {
+			scopeMinWidth = logger.LongestScopeNameLength
+		}
+		for i := scopeWrittenWidth; i < scopeMinWidth; i++ {
+			buf.WriteRune(' ')
+		}
 	}
 	if c.callerFile != "" && !c.DisableCaller {
 		coloring.PreMessageDelimiter.Fprint(&buf, "|")
@@ -423,6 +467,26 @@ func (c context) writeLevel(w io.Writer, level logger.Level) {
 		c.Coloring.LevelPanic.Fprint(w, "PANIC")
 	default:
 		c.Coloring.LevelDebug.Fprint(w, "???  ")
+	}
+}
+
+func (c context) writeTrimmedRight(w io.Writer, col *color.Color, value string, maxLen int) int {
+	const ellipsis = "…"
+	valueLen := len(value)
+	switch {
+	case valueLen == 0 || maxLen <= 0:
+		return 0
+	case maxLen == 1 && valueLen > 1:
+		col.Fprint(w, ellipsis)
+		return 1
+	case valueLen > maxLen:
+		// -1 to make room for the ellipsis
+		sliceLen := maxLen - 1
+		col.Fprint(w, value[:sliceLen], ellipsis)
+		return maxLen
+	default:
+		col.Fprint(w, value)
+		return valueLen
 	}
 }
 
