@@ -29,6 +29,11 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   }
   ```
 
+- Added `consolepretty.Config.ScopeMinLengthAuto` which will pad scopes
+  automatically based on the longest registered scope, or use the
+  `ScopeMinLength` and `ScopeMaxLength` configs to get more fine grained
+  control. (#32)
+
 ## v1.2.0 (2021-09-07)
 
 - Added `wharf-core/pkg/cacertutil`, taken from `wharf-api/internal/httputils`,
