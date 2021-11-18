@@ -40,3 +40,19 @@ func ExampleConfig_ScopeMinLengthAuto() {
 	// [DEBUG|GORM-debug|consolepretty/pretty_example_test.go] Sample message.
 	// [DEBUG|          |consolepretty/pretty_example_test.go] Sample message.
 }
+
+func ExampleConfig_Ellipsis() {
+	defer logger.ClearOutputs()
+	logger.AddOutput(logger.LevelDebug, consolepretty.New(consolepretty.Config{
+		DisableDate:       true,
+		DisableCallerLine: true,
+
+		CallerMaxLength: 15,
+		Ellipsis:        consolepretty.DefaultConfig.Ellipsis,
+	}))
+
+	logger.New().Debug().Message("Sample message.")
+
+	// Output:
+	// [DEBUG|…mple_test.go] Sample message.
+}
