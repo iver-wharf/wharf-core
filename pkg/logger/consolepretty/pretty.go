@@ -470,43 +470,41 @@ func (c context) writeLevel(w io.Writer, level logger.Level) {
 	}
 }
 
+const ellipsis = "…"
+
 func (c context) writeTrimmedRight(w io.Writer, col *color.Color, value string, maxLen int) int {
-	const ellipsis = "…"
-	valueLen := len(value)
-	switch {
-	case valueLen == 0 || maxLen <= 0:
-		return 0
-	case maxLen == 1 && valueLen > 1:
-		col.Fprint(w, ellipsis)
-		return 1
-	case valueLen > maxLen:
-		// -1 to make room for the ellipsis
-		sliceLen := maxLen - 1
-		col.Fprint(w, value[:sliceLen], ellipsis)
-		return maxLen
-	default:
-		col.Fprint(w, value)
-		return valueLen
+	if written, ok := c.writeUntrimmedString(w, col, value, maxLen); ok {
+		return written
 	}
+	sliceLen := maxLen - 1 // -1 to make room for the ellipsis
+	col.Fprint(w, value[:sliceLen], ellipsis)
+	return maxLen
 }
 
 func (c context) writeTrimmedLeft(w io.Writer, col *color.Color, value string, maxLen int) int {
-	const ellipsis = "…"
+	if written, ok := c.writeUntrimmedString(w, col, value, maxLen); ok {
+		return written
+	}
+	sliceStartIndex := len(value) - maxLen + 1 // +1 to make room for the ellipsis
+	col.Fprint(w, ellipsis, value[sliceStartIndex:])
+	return maxLen
+}
+
+func (c context) writeUntrimmedString(w io.Writer, col *color.Color, value string, maxLen int) (int, bool) {
 	valueLen := len(value)
+	if valueLen > maxLen {
+		return 0, false
+	}
 	switch {
 	case valueLen == 0 || maxLen <= 0:
-		return 0
+		// do nothing
+		return 0, true
 	case maxLen == 1 && valueLen > 1:
 		col.Fprint(w, ellipsis)
-		return 1
-	case valueLen > maxLen:
-		// +1 to make room for the ellipsis
-		sliceStartIndex := valueLen - maxLen + 1
-		col.Fprint(w, ellipsis, value[sliceStartIndex:])
-		return maxLen
+		return 1, true
 	default:
 		col.Fprint(w, value)
-		return valueLen
+		return valueLen, true
 	}
 }
 
