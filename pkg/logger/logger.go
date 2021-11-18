@@ -9,6 +9,11 @@ var (
 	minGlobalLevel  = LevelDebug
 	minScopedLevels = make(map[string]Level)
 	registeredSinks []registeredSink
+
+	// LongestScopeNameLength is updated whenever NewScoped is called, and is
+	// the string length of longest scope created. Useful when logging to align
+	// the scopes in the output by padding to obtain this width.
+	LongestScopeNameLength int
 )
 
 // SetLevel will suppress all events (no matter if scoped or not) that has a
@@ -56,6 +61,7 @@ type registeredSink struct {
 // example test.
 func ClearOutputs() {
 	registeredSinks = nil
+	LongestScopeNameLength = 0
 }
 
 // AddOutput registers a logging sink globally. Multiple sinks can be added, and
@@ -123,6 +129,9 @@ func New() Logger {
 // 	logger.NewScoped("GIN") // use when registering logger to gin-gonic
 // 	logger.New() // use in the apps top-level domain
 func NewScoped(scope string) Logger {
+	if len(scope) > LongestScopeNameLength {
+		LongestScopeNameLength = len(scope)
+	}
 	return logger{
 		newEvent: func(level Level, done DoneFunc) Event {
 			return NewEvent(level, scope, done)
