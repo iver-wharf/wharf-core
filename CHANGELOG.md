@@ -34,6 +34,10 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   `ScopeMinLength` and `ScopeMaxLength` configs to get more fine grained
   control. The auto config is active by default. (#32)
 
+- Added `consolepretty.Config.Ellipsis`, which defaults to the unicode ellipsis
+  character `…`, which is used when trimming is applied by `CallerMaxLength` and
+  `ScopeMaxLength`. (#33)
+
 ## v1.2.0 (2021-09-07)
 
 - Added `wharf-core/pkg/cacertutil`, taken from `wharf-api/internal/httputils`,
