@@ -48,7 +48,7 @@ func ExampleConfig_Ellipsis() {
 		DisableCallerLine: true,
 
 		CallerMaxLength: 15,
-		Ellipsis:        consolepretty.DefaultConfig.Ellipsis,
+		//Ellipsis:        "…", // can be overridden
 	}))
 
 	logger.New().Debug().Message("Sample message.")

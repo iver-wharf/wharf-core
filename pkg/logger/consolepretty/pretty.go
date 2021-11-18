@@ -259,6 +259,9 @@ func New(conf Config) logger.Sink {
 	if conf.DateFormat == "" {
 		conf.DateFormat = DefaultConfig.DateFormat
 	}
+	if conf.Ellipsis == "" {
+		conf.Ellipsis = DefaultConfig.Ellipsis
+	}
 	return sink{&conf}
 }
 
