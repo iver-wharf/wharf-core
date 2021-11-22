@@ -164,6 +164,13 @@ type Config struct {
 	// 	Jan 02 15:04Z [INFO |example.go] Sample message.
 	DisableCallerLine bool
 
+	// Ellipsis defines the string used when trimming the values, as an effect
+	// of the caller or scope max length configs.
+	//
+	// Setting this to a value longer than the max length is considered
+	// undefined behavior, and should be avoided.
+	Ellipsis string
+
 	// CallerMaxLength will trim the caller file and line down to this length
 	// if set to a value of 1 or higher.
 	//
@@ -220,6 +227,7 @@ type Config struct {
 // unset. Changing this global value also changes the fallback values used in
 // New.
 var DefaultConfig = Config{
+	Ellipsis:           "…",
 	DateFormat:         "Jan-02 15:04Z0700",
 	CallerMaxLength:    23,
 	CallerMinLength:    23,
@@ -250,6 +258,9 @@ func New(conf Config) logger.Sink {
 	}
 	if conf.DateFormat == "" {
 		conf.DateFormat = DefaultConfig.DateFormat
+	}
+	if conf.Ellipsis == "" {
+		conf.Ellipsis = DefaultConfig.Ellipsis
 	}
 	return sink{&conf}
 }
@@ -470,14 +481,12 @@ func (c context) writeLevel(w io.Writer, level logger.Level) {
 	}
 }
 
-const ellipsis = "…"
-
 func (c context) writeTrimmedRight(w io.Writer, col *color.Color, value string, maxLen int) int {
 	if written, ok := c.writeUntrimmedString(w, col, value, maxLen); ok {
 		return written
 	}
-	sliceLen := maxLen - 1 // -1 to make room for the ellipsis
-	col.Fprint(w, value[:sliceLen], ellipsis)
+	sliceLen := maxLen - len(c.Ellipsis)
+	col.Fprint(w, value[:sliceLen], c.Ellipsis)
 	return maxLen
 }
 
@@ -485,8 +494,8 @@ func (c context) writeTrimmedLeft(w io.Writer, col *color.Color, value string, m
 	if written, ok := c.writeUntrimmedString(w, col, value, maxLen); ok {
 		return written
 	}
-	sliceStartIndex := len(value) - maxLen + 1 // +1 to make room for the ellipsis
-	col.Fprint(w, ellipsis, value[sliceStartIndex:])
+	sliceStartIndex := len(value) - maxLen + len(c.Ellipsis)
+	col.Fprint(w, c.Ellipsis, value[sliceStartIndex:])
 	return maxLen
 }
 
@@ -499,9 +508,13 @@ func (c context) writeUntrimmedString(w io.Writer, col *color.Color, value strin
 	case valueLen == 0 || maxLen <= 0:
 		// do nothing
 		return 0, true
-	case maxLen == 1 && valueLen > 1:
-		col.Fprint(w, ellipsis)
-		return 1, true
+	case maxLen <= len(c.Ellipsis) && valueLen > len(c.Ellipsis):
+		maxEllipsisLen := len(c.Ellipsis)
+		if maxEllipsisLen > maxLen {
+			maxEllipsisLen = maxLen
+		}
+		col.Fprint(w, c.Ellipsis[:maxEllipsisLen])
+		return maxEllipsisLen, true
 	default:
 		col.Fprint(w, value)
 		return valueLen, true
