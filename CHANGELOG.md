@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v1.3.0 (WIP)
+## v1.3.0 (2021-11-22)
 
 - Added `Event.WithFunc(func(Event) Event) Event` to `wharf-core/pkg/logger` to
   make it easier to reuse field inside a certain scope: (#29)
