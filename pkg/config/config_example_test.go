@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/iver-wharf/wharf-core/pkg/config"
+	"github.com/iver-wharf/wharf-core/v2/pkg/config"
 )
 
 type Logging struct {

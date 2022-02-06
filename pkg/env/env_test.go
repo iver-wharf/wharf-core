@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/iver-wharf/wharf-core/internal/testutil"
+	"github.com/iver-wharf/wharf-core/v2/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

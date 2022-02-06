@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/iver-wharf/wharf-core/pkg/env"
+	"github.com/iver-wharf/wharf-core/v2/pkg/env"
 )
 
 func ExampleBind() {

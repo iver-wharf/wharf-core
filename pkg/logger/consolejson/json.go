@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/iver-wharf/wharf-core/pkg/logger"
+	"github.com/iver-wharf/wharf-core/v2/pkg/logger"
 )
 
 // TimeFormat specifies the formatting used when logging time.Time values.

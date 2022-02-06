@@ -3,7 +3,7 @@ package app_test
 import (
 	"fmt"
 
-	"github.com/iver-wharf/wharf-core/pkg/app"
+	"github.com/iver-wharf/wharf-core/v2/pkg/app"
 )
 
 func ExampleUnmarshalVersionYAML() {

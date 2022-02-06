@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/iver-wharf/wharf-core/internal/traceutil"
+	"github.com/iver-wharf/wharf-core/v2/internal/traceutil"
 )
 
 // DoneFunc is the signature of the function that is called at the end of a

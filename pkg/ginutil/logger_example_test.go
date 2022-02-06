@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 
 	"github.com/gin-gonic/gin"
-	"github.com/iver-wharf/wharf-core/pkg/ginutil"
-	"github.com/iver-wharf/wharf-core/pkg/logger"
-	"github.com/iver-wharf/wharf-core/pkg/logger/consolepretty"
+	"github.com/iver-wharf/wharf-core/v2/pkg/ginutil"
+	"github.com/iver-wharf/wharf-core/v2/pkg/logger"
+	"github.com/iver-wharf/wharf-core/v2/pkg/logger/consolepretty"
 )
 
 func init() {

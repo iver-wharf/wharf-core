@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/iver-wharf/wharf-core/pkg/strutil"
+	"github.com/iver-wharf/wharf-core/v2/pkg/strutil"
 )
 
 // HTTPContentType is the value used in HTTP requests and responses for the

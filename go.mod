@@ -1,4 +1,4 @@
-module github.com/iver-wharf/wharf-core
+module github.com/iver-wharf/wharf-core/v2
 
 go 1.18
 
