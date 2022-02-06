@@ -208,11 +208,11 @@ func (ev event) WithFunc(f func(Event) Event) Event {
 }
 
 func (ev event) WithCaller(file string, line int) Event {
-	return ev.with(func(ctx Context) Context { return ctx.SetCaller(file, line) })
+	return withKeyedFunc(ev, file, line, Context.SetCaller)
 }
 
 func (ev event) WithString(key string, value string) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendString(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendString)
 }
 
 func (ev event) WithStringf(key string, format string, args ...any) Event {
@@ -230,60 +230,78 @@ func (ev event) WithStringer(key string, value fmt.Stringer) Event {
 }
 
 func (ev event) WithRune(key string, value rune) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendRune(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendRune)
 }
 
 func (ev event) WithBool(key string, value bool) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendBool(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendBool)
 }
 
 func (ev event) WithInt(key string, value int) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendInt(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendInt)
 }
 
 func (ev event) WithInt64(key string, value int64) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendInt64(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendInt64)
 }
 
 func (ev event) WithInt32(key string, value int32) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendInt32(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendInt32)
 }
 
 func (ev event) WithUint(key string, value uint) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendUint(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendUint)
 }
 
 func (ev event) WithUint64(key string, value uint64) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendUint64(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendUint64)
 }
 
 func (ev event) WithUint32(key string, value uint32) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendUint32(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendUint32)
 }
 
 func (ev event) WithFloat32(key string, value float32) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendFloat32(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendFloat32)
 }
 
 func (ev event) WithFloat64(key string, value float64) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendFloat64(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendFloat64)
 }
 
 func (ev event) WithError(value error) Event {
-	return ev.with(func(ctx Context) Context { return ctx.SetError(value) })
+	return withFunc(ev, value, Context.SetError)
 }
 
 func (ev event) WithTime(key string, value time.Time) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendTime(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendTime)
 }
 
 func (ev event) WithDuration(key string, value time.Duration) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendDuration(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendDuration)
 }
 
 func (ev event) with(f func(Context) Context) Event {
 	for i, ctx := range ev.ctxs {
 		ev.ctxs[i] = f(ctx)
+	}
+	return ev
+}
+
+type contextFunc[T any] func(ctx Context, value T) Context
+
+func withFunc[T any](ev event, value T, f contextFunc[T]) event {
+	for i, ctx := range ev.ctxs {
+		ev.ctxs[i] = f(ctx, value)
+	}
+	return ev
+}
+
+type contextKeyedFunc[T any] func(ctx Context, key string, value T) Context
+
+func withKeyedFunc[T any](ev event, key string, value T, f contextKeyedFunc[T]) event {
+	for i, ctx := range ev.ctxs {
+		ev.ctxs[i] = f(ctx, key, value)
 	}
 	return ev
 }
