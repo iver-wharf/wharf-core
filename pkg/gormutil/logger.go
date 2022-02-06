@@ -61,19 +61,19 @@ func (log gormLog) LogMode(level gormlogger.LogLevel) gormlogger.Interface {
 	return log
 }
 
-func (log gormLog) Info(_ context.Context, message string, args ...interface{}) {
+func (log gormLog) Info(_ context.Context, message string, args ...any) {
 	if log.level >= gormlogger.Info || !log.AlsoUseGORMLogLevel {
 		log.Logger.Info().Messagef(message, args...)
 	}
 }
 
-func (log gormLog) Warn(_ context.Context, message string, args ...interface{}) {
+func (log gormLog) Warn(_ context.Context, message string, args ...any) {
 	if log.level >= gormlogger.Warn || !log.AlsoUseGORMLogLevel {
 		log.Logger.Warn().Messagef(message, args...)
 	}
 }
 
-func (log gormLog) Error(_ context.Context, message string, args ...interface{}) {
+func (log gormLog) Error(_ context.Context, message string, args ...any) {
 	if log.level >= gormlogger.Error || !log.AlsoUseGORMLogLevel {
 		log.Logger.Error().Messagef(message, args...)
 	}

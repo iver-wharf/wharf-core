@@ -289,7 +289,7 @@ type context struct {
 
 type fieldPair struct {
 	key   string
-	value interface{}
+	value any
 }
 
 func (c context) WriteOut(level logger.Level, message string) {
@@ -380,7 +380,7 @@ func (c context) WriteOut(level logger.Level, message string) {
 	io.Copy(c.Writer, &buf)
 }
 
-func getPrintableStringRepresentation(value interface{}) (str string, hasValue bool) {
+func getPrintableStringRepresentation(value any) (str string, hasValue bool) {
 	if value == nil {
 		return "<nil>", false
 	}
@@ -439,7 +439,7 @@ func (c context) AppendFloat64(k string, v float64) logger.Context        { retu
 func (c context) AppendTime(k string, v time.Time) logger.Context         { return c.addField(k, v) }
 func (c context) AppendDuration(k string, v time.Duration) logger.Context { return c.addField(k, v) }
 
-func (c context) addField(key string, value interface{}) logger.Context {
+func (c context) addField(key string, value any) logger.Context {
 	c.fields = append(c.fields, fieldPair{key, value})
 	return c
 }

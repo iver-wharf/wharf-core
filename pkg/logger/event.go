@@ -18,7 +18,7 @@ type DoneFunc func(message string)
 type Event interface {
 	// Messagef submits this log event to the different sinks using a formatted
 	// message. The formatting is the same applied from the fmt package.
-	Messagef(format string, args ...interface{})
+	Messagef(format string, args ...any)
 
 	// Message submits this log event to the different sinks using a message. To
 	// submit without a message you may pass an empty string into this method, like
@@ -48,7 +48,7 @@ type Event interface {
 	// WithStringf adds a formatted string field to this logged message. The
 	// formatting is the same applied from the fmt package. Calling this method
 	// multiple times with the same key may lead to unexpected behaviour.
-	WithStringf(key string, format string, args ...interface{}) Event
+	WithStringf(key string, format string, args ...any) Event
 
 	// WithStringer adds a string field to this logged message using the value
 	// from fmt.Stringer.String(). Calling this method multiple times with the
@@ -119,7 +119,7 @@ type Event interface {
 }
 
 var contextPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return []Context{}
 	},
 }
@@ -176,7 +176,7 @@ func NewEventFromLogger(log Logger, level Level) Event {
 	}
 }
 
-func (ev event) Messagef(format string, args ...interface{}) {
+func (ev event) Messagef(format string, args ...any) {
 	if len(ev.ctxs) > 0 {
 		ev.Message(fmt.Sprintf(format, args...))
 	} else {
@@ -215,7 +215,7 @@ func (ev event) WithString(key string, value string) Event {
 	return ev.with(func(ctx Context) Context { return ctx.AppendString(key, value) })
 }
 
-func (ev event) WithStringf(key string, format string, args ...interface{}) Event {
+func (ev event) WithStringf(key string, format string, args ...any) Event {
 	if len(ev.ctxs) > 0 {
 		return ev.WithString(key, fmt.Sprintf(format, args...))
 	}

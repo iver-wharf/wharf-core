@@ -13,7 +13,7 @@ var RecoverProblem = gin.CustomRecovery(RecoverProblemHandle)
 
 // RecoverProblemHandle writes a HTTP "Internal Server Error" problem response.
 // Meant to be used with the gin-gonic panic recover middleware.
-func RecoverProblemHandle(c *gin.Context, err interface{}) {
+func RecoverProblemHandle(c *gin.Context, err any) {
 	WriteProblem(c, problem.Response{
 		Type:   "/prob/api/internal-server-error",
 		Title:  "Internal server error.",

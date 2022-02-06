@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func testBind(t *testing.T, ptr interface{}, envKey string, envValue string, want interface{}) {
+func testBind(t *testing.T, ptr any, envKey string, envValue string, want any) {
 	t.Run(envKey, func(t *testing.T) {
 		testutil.SetEnv(t, envKey, envValue)
 		require.NoError(t, Bind(ptr, envKey))

@@ -46,7 +46,7 @@ func (err ParseError) Is(target error) bool {
 // error.
 //
 // This method provides compatibility with the errors.As function.
-func (err ParseError) As(target interface{}) bool {
+func (err ParseError) As(target any) bool {
 	return errors.As(err.Err, target)
 }
 
@@ -74,7 +74,7 @@ func (err ParseError) Unwrap() error {
 // pointer.
 //
 // Returns nil otherwise.
-func Bind(i interface{}, key string) error {
+func Bind(i any, key string) error {
 	var envStr, ok = LookupNoEmpty(key)
 	if !ok {
 		return nil
@@ -165,7 +165,7 @@ func Bind(i interface{}, key string) error {
 // error, the value of the respective target interface is left unchanged.
 //
 // An error is returned if any of the bindings failed to bind.
-func BindMultiple(bindings map[interface{}]string) error {
+func BindMultiple(bindings map[any]string) error {
 	for ptr, key := range bindings {
 		if err := Bind(ptr, key); err != nil {
 			return err
