@@ -14,7 +14,13 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 ## v2.0.0 (WIP)
 
-- BREAKING: Changed minor version of Go from 1.16 to 1.18. (#?)
+- BREAKING: Changed minor version of Go from 1.16 to 1.18. (#40)
+
+- BREAKING: Changed module path from `github.com/iver-wharf/wharf-core` to
+  `github.com/iver-wharf/wharf-core/v2`. (#40)
+
+- Changed `env.Bind` to use generic constraints for compile-time assertions
+  instead of runtime assertions. (#40)
 
 ## v1.3.0 (2021-11-30)
 
