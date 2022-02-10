@@ -14,7 +14,7 @@ deps:
 	npm install
 
 lint: lint-md lint-go
-lint-fix: lint-fix-md
+lint-fix: lint-fix-md lint-fix-go
 
 lint-md:
 	npx remark . .github
