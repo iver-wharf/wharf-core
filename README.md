@@ -80,9 +80,9 @@ go test -v ./...
 
 ## Linting
 
-You can lint all of the above at the same time by running:
-
 ```sh
+make deps # download linting dependencies
+
 make lint
 
 make lint-go # only lint Go code
