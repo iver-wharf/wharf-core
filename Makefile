@@ -1,6 +1,6 @@
 .PHONY: check tidy deps \
 	lint lint-md lint-go \
-	lint-fix lint-md-fix
+	lint-fix lint-fix-md lint-fix-go
 
 check:
 	go test ./...
@@ -23,4 +23,8 @@ lint-fix-md:
 	npx remark . .github -o
 
 lint-go:
+	goimports -d $(shell git ls-files "*.go")
 	revive -formatter stylish -config revive.toml ./...
+
+lint-fix-go:
+	goimports -d -w $(shell git ls-files "*.go")
