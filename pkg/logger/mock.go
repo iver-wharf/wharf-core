@@ -26,7 +26,7 @@ func NewMock() *Mock {
 func (log *Mock) NewContext(scope string) Context {
 	ctx := mockCtx{
 		MockLog: MockLog{
-			Fields: make(map[string]interface{}),
+			Fields: make(map[string]any),
 		},
 		logger: log,
 	}
@@ -52,7 +52,7 @@ type MockLog struct {
 	// 	Event.SetCaller("foo", 42)
 	// 		=> MockLog.Fields["caller"] = "foo"
 	// 		=> MockLog.Fields["line"] = 42
-	Fields map[string]interface{}
+	Fields map[string]any
 	// FieldsAdded is a slice of strings with all the keys added to the Fields
 	// map. This includes the custom mapping of Event.SetScope,
 	// Event.SetError, and Event.SetCaller as mentioned in the Fields docs.
@@ -130,7 +130,7 @@ func (c mockCtx) AppendFloat64(k string, v float64) Context        { return c.ad
 func (c mockCtx) AppendTime(k string, v time.Time) Context         { return c.addField(k, v) }
 func (c mockCtx) AppendDuration(k string, v time.Duration) Context { return c.addField(k, v) }
 
-func (c mockCtx) addField(key string, value interface{}) Context {
+func (c mockCtx) addField(key string, value any) Context {
 	c.Fields[key] = value
 	c.FieldsAdded = append(c.FieldsAdded, key)
 	return c

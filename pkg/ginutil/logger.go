@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/iver-wharf/wharf-core/pkg/logger"
+	"github.com/iver-wharf/wharf-core/v2/pkg/logger"
 )
 
 // LoggerConfig holds configuration for the Gin logging integration.

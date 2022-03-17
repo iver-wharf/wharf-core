@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/iver-wharf/wharf-core/internal/traceutil"
+	"github.com/iver-wharf/wharf-core/v2/internal/traceutil"
 )
 
 // DoneFunc is the signature of the function that is called at the end of a
@@ -18,7 +18,7 @@ type DoneFunc func(message string)
 type Event interface {
 	// Messagef submits this log event to the different sinks using a formatted
 	// message. The formatting is the same applied from the fmt package.
-	Messagef(format string, args ...interface{})
+	Messagef(format string, args ...any)
 
 	// Message submits this log event to the different sinks using a message. To
 	// submit without a message you may pass an empty string into this method, like
@@ -48,7 +48,7 @@ type Event interface {
 	// WithStringf adds a formatted string field to this logged message. The
 	// formatting is the same applied from the fmt package. Calling this method
 	// multiple times with the same key may lead to unexpected behaviour.
-	WithStringf(key string, format string, args ...interface{}) Event
+	WithStringf(key string, format string, args ...any) Event
 
 	// WithStringer adds a string field to this logged message using the value
 	// from fmt.Stringer.String(). Calling this method multiple times with the
@@ -119,7 +119,7 @@ type Event interface {
 }
 
 var contextPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return []Context{}
 	},
 }
@@ -176,7 +176,7 @@ func NewEventFromLogger(log Logger, level Level) Event {
 	}
 }
 
-func (ev event) Messagef(format string, args ...interface{}) {
+func (ev event) Messagef(format string, args ...any) {
 	if len(ev.ctxs) > 0 {
 		ev.Message(fmt.Sprintf(format, args...))
 	} else {
@@ -208,14 +208,14 @@ func (ev event) WithFunc(f func(Event) Event) Event {
 }
 
 func (ev event) WithCaller(file string, line int) Event {
-	return ev.with(func(ctx Context) Context { return ctx.SetCaller(file, line) })
+	return withKeyedFunc(ev, file, line, Context.SetCaller)
 }
 
 func (ev event) WithString(key string, value string) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendString(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendString)
 }
 
-func (ev event) WithStringf(key string, format string, args ...interface{}) Event {
+func (ev event) WithStringf(key string, format string, args ...any) Event {
 	if len(ev.ctxs) > 0 {
 		return ev.WithString(key, fmt.Sprintf(format, args...))
 	}
@@ -230,60 +230,78 @@ func (ev event) WithStringer(key string, value fmt.Stringer) Event {
 }
 
 func (ev event) WithRune(key string, value rune) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendRune(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendRune)
 }
 
 func (ev event) WithBool(key string, value bool) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendBool(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendBool)
 }
 
 func (ev event) WithInt(key string, value int) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendInt(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendInt)
 }
 
 func (ev event) WithInt64(key string, value int64) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendInt64(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendInt64)
 }
 
 func (ev event) WithInt32(key string, value int32) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendInt32(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendInt32)
 }
 
 func (ev event) WithUint(key string, value uint) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendUint(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendUint)
 }
 
 func (ev event) WithUint64(key string, value uint64) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendUint64(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendUint64)
 }
 
 func (ev event) WithUint32(key string, value uint32) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendUint32(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendUint32)
 }
 
 func (ev event) WithFloat32(key string, value float32) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendFloat32(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendFloat32)
 }
 
 func (ev event) WithFloat64(key string, value float64) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendFloat64(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendFloat64)
 }
 
 func (ev event) WithError(value error) Event {
-	return ev.with(func(ctx Context) Context { return ctx.SetError(value) })
+	return withFunc(ev, value, Context.SetError)
 }
 
 func (ev event) WithTime(key string, value time.Time) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendTime(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendTime)
 }
 
 func (ev event) WithDuration(key string, value time.Duration) Event {
-	return ev.with(func(ctx Context) Context { return ctx.AppendDuration(key, value) })
+	return withKeyedFunc(ev, key, value, Context.AppendDuration)
 }
 
 func (ev event) with(f func(Context) Context) Event {
 	for i, ctx := range ev.ctxs {
 		ev.ctxs[i] = f(ctx)
+	}
+	return ev
+}
+
+type contextFunc[T any] func(ctx Context, value T) Context
+
+func withFunc[T any](ev event, value T, f contextFunc[T]) event {
+	for i, ctx := range ev.ctxs {
+		ev.ctxs[i] = f(ctx, value)
+	}
+	return ev
+}
+
+type contextKeyedFunc[T any] func(ctx Context, key string, value T) Context
+
+func withKeyedFunc[T any](ev event, key string, value T, f contextKeyedFunc[T]) event {
+	for i, ctx := range ev.ctxs {
+		ev.ctxs[i] = f(ctx, key, value)
 	}
 	return ev
 }

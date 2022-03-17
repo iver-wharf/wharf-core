@@ -44,7 +44,7 @@ What you **will not** find in this repository:
 
 ## Development
 
-1. Install Go 1.16 or later: <https://golang.org/>
+1. Install Go 1.18 or later: <https://golang.org/>
 
 2. Install the [swaggo/swag](https://github.com/swaggo/swag) CLI globally:
 

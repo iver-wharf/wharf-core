@@ -6,7 +6,7 @@ import (
 	"net/url"
 
 	"github.com/gin-gonic/gin"
-	"github.com/iver-wharf/wharf-core/pkg/problem"
+	"github.com/iver-wharf/wharf-core/v2/pkg/problem"
 )
 
 // WriteProblem writes the Problem as JSON into the output response body

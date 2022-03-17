@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"reflect"
 	"strconv"
 	"time"
 )
@@ -12,10 +11,6 @@ import (
 // ErrUnsupportedType is returned when an environment variable target to bind is
 // not supported. For example a custom struct type.
 var ErrUnsupportedType = errors.New("unsupported type")
-
-// ErrNotAPointer is returned when an environment variable target to bind is not
-// a pointer. It's also a wrapped "unsupported type" error.
-var ErrNotAPointer = fmt.Errorf("%w: not a pointer", ErrUnsupportedType)
 
 // ErrParse is used in the ParseError type when checking error.Is to be able to
 // identify the error responses from the bind functions.
@@ -46,7 +41,7 @@ func (err ParseError) Is(target error) bool {
 // error.
 //
 // This method provides compatibility with the errors.As function.
-func (err ParseError) As(target interface{}) bool {
+func (err ParseError) As(target any) bool {
 	return errors.As(err.Err, target)
 }
 
@@ -56,6 +51,13 @@ func (err ParseError) As(target interface{}) bool {
 // This method provides compatibility with the errors.Unwrap function.
 func (err ParseError) Unwrap() error {
 	return err.Err
+}
+
+// BindConstraint is a generic type constraint of all the types that the Bind
+// function supports.
+type BindConstraint interface {
+	*string | *bool | *int | *int32 | *int64 | *uint | *uint32 | *uint64 |
+		*float32 | *float64 | *time.Time | *time.Duration
 }
 
 // Bind will take a value pointer and depending on its type will try to parse
@@ -74,12 +76,12 @@ func (err ParseError) Unwrap() error {
 // pointer.
 //
 // Returns nil otherwise.
-func Bind(i interface{}, key string) error {
+func Bind[T BindConstraint](i T, key string) error {
 	var envStr, ok = LookupNoEmpty(key)
 	if !ok {
 		return nil
 	}
-	switch ptr := i.(type) {
+	switch ptr := (any)(i).(type) {
 	case *string:
 		*ptr = envStr
 	case *bool:
@@ -149,9 +151,6 @@ func Bind(i interface{}, key string) error {
 		}
 		*ptr = value
 	default:
-		if reflect.TypeOf(i).Kind() != reflect.Ptr {
-			return fmt.Errorf("env %q: %w: %T", key, ErrNotAPointer, i)
-		}
 		return fmt.Errorf("env %q: %w: %T", key, ErrUnsupportedType, i)
 	}
 	return nil
@@ -165,7 +164,7 @@ func Bind(i interface{}, key string) error {
 // error, the value of the respective target interface is left unchanged.
 //
 // An error is returned if any of the bindings failed to bind.
-func BindMultiple(bindings map[interface{}]string) error {
+func BindMultiple[T BindConstraint](bindings map[T]string) error {
 	for ptr, key := range bindings {
 		if err := Bind(ptr, key); err != nil {
 			return err

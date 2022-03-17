@@ -5,12 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/iver-wharf/wharf-core/internal/testutil"
+	"github.com/iver-wharf/wharf-core/v2/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func testBind(t *testing.T, ptr interface{}, envKey string, envValue string, want interface{}) {
+func testBind[T BindConstraint](t *testing.T, ptr T, envKey string, envValue string, want any) {
 	t.Run(envKey, func(t *testing.T) {
 		testutil.SetEnv(t, envKey, envValue)
 		require.NoError(t, Bind(ptr, envKey))
@@ -49,5 +49,5 @@ func TestBind(t *testing.T) {
 }
 
 func TestBindMultiple_noErrorOnNilMap(t *testing.T) {
-	assert.NoError(t, BindMultiple(nil))
+	assert.NoError(t, BindMultiple[*int](nil))
 }

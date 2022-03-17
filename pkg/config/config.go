@@ -80,7 +80,7 @@ type Builder interface {
 	//
 	// The error that is returned is caused by any of the added config sources,
 	// such as from invalid YAML syntax in an added YAML file.
-	Unmarshal(config interface{}) error
+	Unmarshal(config any) error
 }
 
 // NewBuilder creates a new Builder based on a default configuration.
@@ -88,14 +88,14 @@ type Builder interface {
 // Due to technical limitations, it's vital that this default configuration is
 // of the same type that the config that you wish to unmarshal later, or at
 // least that it contains fields with the same names.
-func NewBuilder(defaultConfig interface{}) Builder {
+func NewBuilder(defaultConfig any) Builder {
 	return &builder{
 		defaultConfig: defaultConfig,
 	}
 }
 
 type builder struct {
-	defaultConfig interface{}
+	defaultConfig any
 	sources       []configSource
 }
 
@@ -116,7 +116,7 @@ func (b *builder) AddEnvironmentVariables(prefix string) {
 	b.sources = append(b.sources, envVarsSource{prefix})
 }
 
-func (b *builder) Unmarshal(config interface{}) error {
+func (b *builder) Unmarshal(config any) error {
 	v := viper.New()
 	initDefaults(v, b.defaultConfig)
 	for _, s := range b.sources {
@@ -127,7 +127,7 @@ func (b *builder) Unmarshal(config interface{}) error {
 	return v.Unmarshal(config)
 }
 
-func initDefaults(v *viper.Viper, defaultConfig interface{}) error {
+func initDefaults(v *viper.Viper, defaultConfig any) error {
 	// Uses a workaround to force viper to read environment variables
 	// by making it aware of all fields that exists so it can later map
 	// environment variables correctly.

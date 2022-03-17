@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 
 	"github.com/gin-gonic/gin"
-	"github.com/iver-wharf/wharf-core/pkg/ginutil"
-	"github.com/iver-wharf/wharf-core/pkg/problem"
+	"github.com/iver-wharf/wharf-core/v2/pkg/ginutil"
+	"github.com/iver-wharf/wharf-core/v2/pkg/problem"
 )
 
 func init() {

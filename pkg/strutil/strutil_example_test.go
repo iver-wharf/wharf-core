@@ -3,7 +3,7 @@ package strutil_test
 import (
 	"fmt"
 
-	"github.com/iver-wharf/wharf-core/pkg/strutil"
+	"github.com/iver-wharf/wharf-core/v2/pkg/strutil"
 )
 
 func ExampleFirstRuneUpper() {

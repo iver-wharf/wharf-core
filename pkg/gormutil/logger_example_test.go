@@ -3,9 +3,9 @@ package gormutil_test
 import (
 	"fmt"
 
-	"github.com/iver-wharf/wharf-core/pkg/gormutil"
-	"github.com/iver-wharf/wharf-core/pkg/logger"
-	"github.com/iver-wharf/wharf-core/pkg/logger/consolepretty"
+	"github.com/iver-wharf/wharf-core/v2/pkg/gormutil"
+	"github.com/iver-wharf/wharf-core/v2/pkg/logger"
+	"github.com/iver-wharf/wharf-core/v2/pkg/logger/consolepretty"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

@@ -3,7 +3,7 @@ package logger_test
 import (
 	"fmt"
 
-	"github.com/iver-wharf/wharf-core/pkg/logger"
+	"github.com/iver-wharf/wharf-core/v2/pkg/logger"
 )
 
 func ExampleLevel_String() {

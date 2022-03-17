@@ -3,8 +3,8 @@ package consolejson_test
 import (
 	"time"
 
-	"github.com/iver-wharf/wharf-core/pkg/logger"
-	"github.com/iver-wharf/wharf-core/pkg/logger/consolejson"
+	"github.com/iver-wharf/wharf-core/v2/pkg/logger"
+	"github.com/iver-wharf/wharf-core/v2/pkg/logger/consolejson"
 )
 
 func ExampleNew() {

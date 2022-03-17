@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/iver-wharf/wharf-core/pkg/app"
+	"github.com/iver-wharf/wharf-core/v2/pkg/app"
 )
 
 // The version.yaml file should be populated by a CI pipeline build step just
