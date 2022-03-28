@@ -22,6 +22,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Changed `env.Bind` to use generic constraints for compile-time assertions
   instead of runtime assertions. (#40)
 
+- Changed quotation marks in `pkg/logger/consolepretty` to `“”` instead of
+  backtick `` ` `` to result in fewer backslash escapes. (#43)
+
 ## v1.3.0 (2021-11-30)
 
 - Added `Event.WithFunc(func(Event) Event) Event` to `wharf-core/pkg/logger` to
