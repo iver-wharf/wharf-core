@@ -387,7 +387,7 @@ func getPrintableStringRepresentation(value any) (str string, hasValue bool) {
 	switch v := value.(type) {
 	case string:
 		if v == "" {
-			return "``", false
+			return "“”", false
 		}
 		return escapeString(v), true
 	default:
@@ -403,13 +403,11 @@ var escapeStringReplacer = strings.NewReplacer(
 	"\r", `\r`,
 	"\t", `\t`,
 	"\v", `\v`,
-	`\`, `\\`,
-	"`", "\\`",
 )
 
 func escapeString(value string) string {
-	if strings.ContainsAny(value, " \a\b\f\n\r\t\v\"\\`") {
-		return fmt.Sprintf("`%s`", escapeStringReplacer.Replace(value))
+	if strings.ContainsAny(value, " \a\b\f\n\r\t\v") {
+		return fmt.Sprintf("“%s”", escapeStringReplacer.Replace(value))
 	}
 	return value
 }
