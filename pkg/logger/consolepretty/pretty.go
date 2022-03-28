@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/fatih/color"
 	"github.com/iver-wharf/wharf-core/v2/pkg/logger"
@@ -262,29 +263,35 @@ func New(conf Config) logger.Sink {
 	if conf.Ellipsis == "" {
 		conf.Ellipsis = DefaultConfig.Ellipsis
 	}
-	return sink{&conf}
+	return sink{
+		config:      &conf,
+		ellipsisLen: utf8.RuneCountInString(conf.Ellipsis),
+	}
 }
 
 type sink struct {
-	config *Config
+	config      *Config
+	ellipsisLen int
 }
 
 // NewContext creates a new pretty-console logging Context using the
 // same configuration as the one given when creating the Sink.
 func (s sink) NewContext(scope string) logger.Context {
 	return context{
-		Config: s.config,
-		scope:  scope,
+		Config:      s.config,
+		scope:       scope,
+		ellipsisLen: s.ellipsisLen,
 	}
 }
 
 type context struct {
 	*Config
-	fields     []fieldPair
-	scope      string
-	callerFile string
-	callerLine int
-	err        error
+	fields      []fieldPair
+	scope       string
+	callerFile  string
+	callerLine  int
+	err         error
+	ellipsisLen int
 }
 
 type fieldPair struct {
@@ -483,7 +490,7 @@ func (c context) writeTrimmedRight(w io.Writer, col *color.Color, value string, 
 	if written, ok := c.writeUntrimmedString(w, col, value, maxLen); ok {
 		return written
 	}
-	sliceLen := maxLen - len(c.Ellipsis)
+	sliceLen := maxLen - c.ellipsisLen
 	col.Fprint(w, value[:sliceLen], c.Ellipsis)
 	return maxLen
 }
@@ -492,7 +499,7 @@ func (c context) writeTrimmedLeft(w io.Writer, col *color.Color, value string, m
 	if written, ok := c.writeUntrimmedString(w, col, value, maxLen); ok {
 		return written
 	}
-	sliceStartIndex := len(value) - maxLen + len(c.Ellipsis)
+	sliceStartIndex := len(value) - maxLen + c.ellipsisLen
 	col.Fprint(w, c.Ellipsis, value[sliceStartIndex:])
 	return maxLen
 }
@@ -506,13 +513,9 @@ func (c context) writeUntrimmedString(w io.Writer, col *color.Color, value strin
 	case valueLen == 0 || maxLen <= 0:
 		// do nothing
 		return 0, true
-	case maxLen <= len(c.Ellipsis) && valueLen > len(c.Ellipsis):
-		maxEllipsisLen := len(c.Ellipsis)
-		if maxEllipsisLen > maxLen {
-			maxEllipsisLen = maxLen
-		}
-		col.Fprint(w, c.Ellipsis[:maxEllipsisLen])
-		return maxEllipsisLen, true
+	case maxLen <= c.ellipsisLen && valueLen > c.ellipsisLen:
+		col.Fprint(w, c.Ellipsis)
+		return c.ellipsisLen, true
 	default:
 		col.Fprint(w, value)
 		return valueLen, true

@@ -54,5 +54,5 @@ func ExampleConfig_Ellipsis() {
 	logger.New().Debug().Message("Sample message.")
 
 	// Output:
-	// [DEBUG|…mple_test.go] Sample message.
+	// [DEBUG|…xample_test.go] Sample message.
 }
