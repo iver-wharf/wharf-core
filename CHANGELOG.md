@@ -22,6 +22,9 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 - Changed `env.Bind` to use generic constraints for compile-time assertions
   instead of runtime assertions. (#40)
 
+- Changed quotation marks in `pkg/logger/consolepretty` to `“”` instead of
+  backtick `` ` `` to result in fewer backslash escapes. (#43)
+
 - Fixed shortened caller file name and scope being miscalculated due to the
   default ellipsis being 1 rune long but 3 bytes. It will now correctly treat
   `…` as only 1 rune when calculating the string shortening. (#44)
