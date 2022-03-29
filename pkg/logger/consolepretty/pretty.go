@@ -165,6 +165,14 @@ type Config struct {
 	// 	Jan 02 15:04Z [INFO |example.go] Sample message.
 	DisableCallerLine bool
 
+	// DisableScope removes the log scope from the log when set to true.
+	//
+	// When set to false:
+	// 	Jan 02 15:04Z [INFO |MY-SCOPE|example.go:20] Sample message.
+	// With set to true:
+	// 	Jan 02 15:04Z [INFO |example.go] Sample message.
+	DisableScope bool
+
 	// Ellipsis defines the string used when trimming the values, as an effect
 	// of the caller or scope max length configs.
 	//
@@ -311,46 +319,8 @@ func (c context) WriteOut(level logger.Level, message string) {
 	}
 	coloring.PreMessageDelimiter.Fprint(&buf, "[")
 	c.writeLevel(&buf, level)
-	if c.scope != "" || c.Config.ScopeMinLength > 0 || c.Config.ScopeMinLengthAuto {
-		coloring.PreMessageDelimiter.Fprint(&buf, "|")
-		scopeWrittenWidth := len(c.scope)
-		if c.Config.ScopeMaxLength > 0 {
-			scopeWrittenWidth = c.writeTrimmedRight(&buf, coloring.Scope, c.scope, c.Config.ScopeMaxLength)
-		} else {
-			coloring.Scope.Fprint(&buf, c.scope)
-		}
-		scopeMinWidth := c.Config.ScopeMinLength
-		if c.Config.ScopeMinLengthAuto {
-			scopeMinWidth = logger.LongestScopeNameLength
-		}
-		for i := scopeWrittenWidth; i < scopeMinWidth; i++ {
-			buf.WriteRune(' ')
-		}
-	}
-	if c.callerFile != "" && !c.DisableCaller {
-		coloring.PreMessageDelimiter.Fprint(&buf, "|")
-		writtenWidth := 0
-		maxFileWidth := c.Config.CallerMaxLength
-		if maxFileWidth > 0 {
-			if !c.DisableCallerLine {
-				maxFileWidth-- // for the delimiter
-				maxFileWidth -= printedIntLenFast(c.callerLine)
-			}
-			writtenWidth = c.writeTrimmedLeft(&buf, coloring.CallerFile, c.callerFile, maxFileWidth)
-		} else {
-			coloring.CallerFile.Fprint(&buf, c.callerFile)
-			writtenWidth = len(c.callerFile)
-		}
-		if !c.DisableCallerLine {
-			coloring.CallerDelimiter.Fprint(&buf, ":")
-			lineStr := strconv.FormatInt(int64(c.callerLine), 10)
-			coloring.CallerLine.Fprint(&buf, lineStr)
-			writtenWidth += len(lineStr) + 1
-		}
-		for i := writtenWidth; i < c.Config.CallerMinLength; i++ {
-			buf.WriteRune(' ')
-		}
-	}
+	c.writeScope(&buf)
+	c.writeCaller(&buf)
 	coloring.PreMessageDelimiter.Fprint(&buf, "]")
 	buf.WriteRune(' ')
 	needsSeparator := false
@@ -483,6 +453,59 @@ func (c context) writeLevel(w io.Writer, level logger.Level) {
 		c.Coloring.LevelPanic.Fprint(w, "PANIC")
 	default:
 		c.Coloring.LevelDebug.Fprint(w, "???  ")
+	}
+}
+
+func (c context) writeScope(buf *bytes.Buffer) {
+	if c.DisableScope {
+		return
+	}
+	scopeMinWidth := c.Config.ScopeMinLength
+	if c.Config.ScopeMinLengthAuto {
+		scopeMinWidth = logger.LongestScopeNameLength
+	}
+	anyNonEmptyScope := c.scope != "" || logger.LongestScopeNameLength > 0
+	if !anyNonEmptyScope && scopeMinWidth <= 0 {
+		return
+	}
+	c.Coloring.PreMessageDelimiter.Fprint(buf, "|")
+	scopeWrittenWidth := len(c.scope)
+	if c.Config.ScopeMaxLength > 0 {
+		scopeWrittenWidth = c.writeTrimmedRight(buf,
+			c.Coloring.Scope, c.scope, c.Config.ScopeMaxLength)
+	} else {
+		c.Coloring.Scope.Fprint(buf, c.scope)
+	}
+	for i := scopeWrittenWidth; i < scopeMinWidth; i++ {
+		buf.WriteRune(' ')
+	}
+}
+
+func (c context) writeCaller(buf *bytes.Buffer) {
+	if c.callerFile == "" || c.DisableCaller {
+		return
+	}
+	c.Coloring.PreMessageDelimiter.Fprint(buf, "|")
+	writtenWidth := 0
+	maxFileWidth := c.Config.CallerMaxLength
+	if maxFileWidth > 0 {
+		if !c.DisableCallerLine {
+			maxFileWidth-- // for the delimiter
+			maxFileWidth -= printedIntLenFast(c.callerLine)
+		}
+		writtenWidth = c.writeTrimmedLeft(buf, c.Coloring.CallerFile, c.callerFile, maxFileWidth)
+	} else {
+		c.Coloring.CallerFile.Fprint(buf, c.callerFile)
+		writtenWidth = len(c.callerFile)
+	}
+	if !c.DisableCallerLine {
+		c.Coloring.CallerDelimiter.Fprint(buf, ":")
+		lineStr := strconv.FormatInt(int64(c.callerLine), 10)
+		c.Coloring.CallerLine.Fprint(buf, lineStr)
+		writtenWidth += len(lineStr) + 1
+	}
+	for i := writtenWidth; i < c.Config.CallerMinLength; i++ {
+		buf.WriteRune(' ')
 	}
 }
 
