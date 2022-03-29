@@ -29,6 +29,11 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   default ellipsis being 1 rune long but 3 bytes. It will now correctly treat
   `…` as only 1 rune when calculating the string shortening. (#44)
 
+- Fixed scopes delimiter being written by `pkg/logger/consolepretty` when no
+  scopes are used. (#45)
+
+- Added `Config.DisableScope` in `pkg/logger/consolepretty`. (#45)
+
 ## v1.3.0 (2021-11-30)
 
 - Added `Event.WithFunc(func(Event) Event) Event` to `wharf-core/pkg/logger` to
