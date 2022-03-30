@@ -34,6 +34,16 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 
 - Added `Config.DisableScope` in `pkg/logger/consolepretty`. (#45)
 
+- Changed version of dependencies:
+
+  - `github.com/fatih/color` from v1.12.0 to v1.13.0 (#46)
+  - `github.com/gin-gonic/gin` from v1.7.1 to v1.7.7 (#46)
+  - `github.com/mattn/go-colorable` from v0.1.8 to v0.1.12 (#46)
+  - `github.com/spf13/viper` from v1.7.1 to v1.10.1 (#46)
+  - `github.com/stretchr/testify` from v1.7.0 to v1.7.1 (#46)
+  - `gorm.io/driver/postgres` from v1.1.0 to v1.3.1 (#46)
+  - `gorm.io/gorm` from v1.21.11 to v1.23.3 (#46)
+
 ## v1.3.0 (2021-11-30)
 
 - Added `Event.WithFunc(func(Event) Event) Event` to `wharf-core/pkg/logger` to
