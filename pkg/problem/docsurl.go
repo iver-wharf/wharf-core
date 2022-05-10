@@ -4,7 +4,7 @@ import "net/url"
 
 // DocsHost is the host name of the documentation page. Use in various helper
 // functions as a fallback if no host is provided.
-var DocsHost = "iver-wharf.github.io"
+var DocsHost = "wharf.iver.com"
 
 // ConvertURLToAbsDocsURL adds schema and sets the host if that has not been set.
 func ConvertURLToAbsDocsURL(u url.URL) *url.URL {

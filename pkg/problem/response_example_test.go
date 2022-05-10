@@ -17,7 +17,7 @@ func ExampleParseHTTPResponse() {
 	req.Response = &http.Response{
 		Body: io.NopCloser(strings.NewReader(`
 {
-  "type": "https://iver-wharf.github.io/#/prob/build/run/invalid-input",
+  "type": "https://wharf.iver.com/#/prob/build/run/invalid-input",
   "title": "Invalid input variable for build.",
   "status": 400,
   "detail": "Build requires input variable 'myInput' to be of type 'string', but got 'int' instead.",
@@ -41,7 +41,7 @@ func ExampleParseHTTPResponse() {
 	}
 
 	// Output:
-	// {(problem) HTTP 400, https://iver-wharf.github.io/#/prob/build/run/invalid-input
+	// {(problem) HTTP 400, https://wharf.iver.com/#/prob/build/run/invalid-input
 	//     Title: Invalid input variable for build.
 	//    Detail: Build requires input variable 'myInput' to be of type 'string', but got 'int' instead.
 	//  Error(s): [strconv.ParseUint: parsing "-1": invalid syntax]

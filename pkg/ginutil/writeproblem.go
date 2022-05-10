@@ -14,7 +14,7 @@ import (
 //
 // Problem.Type is set to "about:blank" (as recommended by the IETF RFC-7808)
 // if left unset, or converts scheme-less URIs to start with
-// "https://iver-wharf.github.io/#/".
+// "https://wharf.iver.com/#/".
 //
 // Problem.Status is set to 500 (Internal Server Error) if left unset.
 //
