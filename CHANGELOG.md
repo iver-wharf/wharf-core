@@ -44,6 +44,8 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
   - `gorm.io/driver/postgres` from v1.1.0 to v1.3.1 (#46)
   - `gorm.io/gorm` from v1.21.11 to v1.23.3 (#46)
 
+- Changed `DocsHome` in `pkg/problem` to `wharf.iver.com`. (#48)
+
 ## v1.3.0 (2021-11-30)
 
 - Added `Event.WithFunc(func(Event) Event) Event` to `wharf-core/pkg/logger` to

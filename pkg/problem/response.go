@@ -26,7 +26,7 @@ type Response struct {
 	// human-readable documentation for the problem type (e.g., using HTML).
 	// When this member is not present, its value is assumed to be
 	// "about:blank".
-	Type string `json:"type" example:"https://iver-wharf.github.io/#/prob/build/run/invalid-input"`
+	Type string `json:"type" example:"https://wharf.iver.com/#/prob/build/run/invalid-input"`
 
 	// Title is a short, human-readable summary of the problem type.
 	// It SHOULD NOT change from occurrence to ocurrence of the problem, except

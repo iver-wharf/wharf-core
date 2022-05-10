@@ -26,7 +26,7 @@ func indentedBodyFromResponse(resp *http.Response) string {
 
 func ExampleWriteProblem() {
 	var prob = problem.Response{
-		Type:     "https://iver-wharf.github.io/#/prob/build/run/invalid-input",
+		Type:     "https://wharf.iver.com/#/prob/build/run/invalid-input",
 		Title:    "Invalid input variable for build.",
 		Status:   400,
 		Detail:   "Build requires input variable 'myInput' to be of type 'string', but got 'int' instead.",
@@ -53,7 +53,7 @@ func ExampleWriteProblem() {
 	// Content-Type: application/problem+json
 	//
 	// {
-	//   "type": "https://iver-wharf.github.io/#/prob/build/run/invalid-input",
+	//   "type": "https://wharf.iver.com/#/prob/build/run/invalid-input",
 	//   "title": "Invalid input variable for build.",
 	//   "status": 400,
 	//   "detail": "Build requires input variable 'myInput' to be of type 'string', but got 'int' instead.",
