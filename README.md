@@ -5,6 +5,10 @@
 
 Utility Go code used by numerous other Wharf components.
 
+```sh
+go get -u github.com/iver-wharf/wharf-core/v2
+```
+
 Mantra of this repository is to include code that will be used in more than 1
 other repository, and does not solve any particular use case. It's more for
 common code. It holds code that does not solve any particular problems that’s
