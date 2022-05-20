@@ -12,7 +12,7 @@ This project tries to follow [SemVer 2.0.0](https://semver.org/).
 	https://changelog.md/
 -->
 
-## v2.0.0 (WIP)
+## v2.0.0 (2022-05-20)
 
 - BREAKING: Changed minor version of Go from 1.16 to 1.18. (#40)
 
